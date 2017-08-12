@@ -14,6 +14,9 @@
 #define CARD_SPI_BUSY   (1<<7)
 #define CARD_SPI_HOLD   (1<<6)
 
+// for CTRCARD, but GM9 uses it in NTRCARD init.
+#define REG_CTRCARDSECCNT (*(vu32*)0x10004008)
+
 #define LATENCY 0x822C
 
 void Cart_NTRInit(void);

@@ -33,14 +33,11 @@ void ResetCartSlot(void)
     REG_CARDCONF2 = 0x8;
     while(REG_CARDCONF2 != 0x8);
 
-	ioDelay(0xF000);
-
-	REG_NTRCARDROMCNT = 0x20000000;
-	REG_CARDCONF &= ~3;
-	REG_CARDCONF &= ~0x100;
-	REG_NTRCARDMCNTH = NTRCARD_CR1_ENABLE;
-
-	ioDelay(0xF000);
+	// ioDelay(0xF000);
+    //
+	// SwitchToNTRCARD();
+    //
+	// ioDelay(0xF000);
 }
 
 void SwitchToNTRCARD(void)
@@ -55,8 +52,11 @@ void Cart_NTRInit(void)
 {
 	ResetCartSlot(); //Seems to reset the cart slot?
 
-	//SwitchToNTRCARD();
-    //ioDelay(0x30000);
+    REG_CTRCARDSECCNT &= 0xFFFFFFFB;
+    ioDelay(0x40000);
+
+	SwitchToNTRCARD();
+    ioDelay(0x40000);
 
 	//REG_CTRCARDCNT |= 0x10000000u;
 	//REG_CTRCARDCNT2 |= 0x10000000u;
