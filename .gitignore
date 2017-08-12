@@ -1,0 +1,11 @@
+ntrboot_flasher/build
+ntrboot_flasher/*.bin
+libelm/build
+libelm/lib
+*.firm
+*.firm.sha
+*.o
+*.elf
+*.d
+
+*.gch

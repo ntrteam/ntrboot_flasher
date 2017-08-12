@@ -1,0 +1,3 @@
+[submodule "ntrboot_flasher/source/flashcart_core"]
+	path = ntrboot_flasher/source/flashcart_core
+	url = https://github.com/kitling/flashcart_core.git
