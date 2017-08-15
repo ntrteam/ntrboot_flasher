@@ -42,9 +42,9 @@ CFLAGS	+=	$(INCLUDE) -DARM9 -D_GNU_SOURCE
 CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions
 
 ASFLAGS	:=	-g $(ARCH)
-LDFLAGS	=	-nostartfiles -g --specs=../stub.specs $(ARCH) -Wl,-Map,$(TARGET).map
+LDFLAGS	=	-g --specs=../stub.specs $(ARCH) -Wl,-Map,$(TARGET).map
 
-LIBS	:= -lelm 
+LIBS	:= -lelm
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
