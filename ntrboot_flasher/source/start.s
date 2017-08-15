@@ -35,11 +35,6 @@ _start:
 	ldr	r4, =__dtcm_end
 	bl	CopyMemCheck
 	
-@	ldr	r1, =__iwram_lma	@ Copy internal work ram (iwram section) from LMA to VMA (ROM to RAM)
-@	ldr	r2, =__iwram_start
-@	ldr	r4, =__iwram_end
-@	bl	CopyMemCheck
-	
 	ldr	r0, =__bss_start__	@ Clear BSS section
 	ldr	r1, =__bss_end__
 	sub	r1, r1, r0
@@ -57,12 +52,6 @@ _start:
 @---------------------------------------------------------------------------------
 _call_main:
 @---------------------------------------------------------------------------------
-	@mov		lr, #0
-	
-	@Hook ARM11 before main
-	@ldr		r3,=_gwHook
-	@blx		r3
-	
 	pop {r0-r1}
 	ldr		r3, =main
 	blx		r3
