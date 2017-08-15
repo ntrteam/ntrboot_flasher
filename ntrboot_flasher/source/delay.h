@@ -4,4 +4,4 @@
 
 #pragma once
 
-extern "C" void ioDelay(u32 us);
+extern "C" void ioDelay(uint32_t us);

@@ -14,6 +14,7 @@
 #include "3dstypes.h"
 
 #include "gamecart/protocol.h"
+#include "gamecart/protocol_ntr.h"
 #include "flashcart_core/device.h"
 
 #include "misc.h"
@@ -170,7 +171,7 @@ int main(int argc, char** argv)
 {
     *(volatile u32*)0x10000020 = 0; // InitFS stuff
     *(volatile u32*)0x10000020 = 0x200; // InitFS stuff
-    
+
     // Fetch the framebuffer addresses
     if(argc >= 2) {
         // newer entrypoints
@@ -313,7 +314,7 @@ void handleDumpFlash()
 
         ShowProgress(TOP_SCREEN, 0, 0);
         cart->readFlash(0, length, memp);
-        
+
         //Create folder if it doesn't exist
         struct stat st = {0};
         if (stat("fat1:/ntrboot", &st) == -1) {
@@ -370,7 +371,7 @@ void handleRestoreFlash()
     DrawStringF(TOP_SCREEN, 10, 20, "Restoring flash");
 
     ELM_Mount();
-    
+
     struct stat st = {0};
     if (stat("fat1:/ntrboot", &st) == -1)
     {
@@ -407,7 +408,7 @@ void handleRestoreFlash()
         Flashcart *cart = Flashcart::detectCart();
         if (cart != nullptr) {
             DrawStringF(TOP_SCREEN, 10, 70, "Detected: %s", cart->getDescription());
-            
+
 #ifdef FULL_RESTORE
             DrawStringF(TOP_SCREEN, 10, 90, "Writing...");
             ShowProgress(TOP_SCREEN, 0, 0);
@@ -416,17 +417,17 @@ void handleRestoreFlash()
             uint32_t flash_length = cart->getMaxLength();
             uint8_t* flash_mem = (uint8_t*)memalign(4,flash_length);
             uint8_t* flash_memp = flash_mem;
-            
+
             DrawStringF(TOP_SCREEN, 10, 80, "Reading...");
             ShowProgress(TOP_SCREEN, 0, 0);
             cart->readFlash(0, length, flash_memp);
-            
+
             int written_chunk = 0;
             const int chunk_size = 64*1024;
             for(int j=0; j<length; j+=chunk_size)
             {
                 DrawStringF(TOP_SCREEN, 10, 90, "Checking %08X", j);
-                ShowProgress(TOP_SCREEN, j, length);	
+                ShowProgress(TOP_SCREEN, j, length);
                 if(crc16(flash_memp+j,chunk_size) != crc16(memp+j,chunk_size))
                 {
                     DrawStringF(TOP_SCREEN, 10, 100, "Writing chunk %08X", j);
@@ -435,7 +436,7 @@ void handleRestoreFlash()
                     DrawStringF(TOP_SCREEN, 10, 110, "Chunks written %d (%08X)", written_chunk, written_chunk);
                 }
             }
-            
+
             free(flash_mem);
 #endif
 
@@ -468,7 +469,7 @@ void handleRestoreFlash()
 void handleInject()
 {
     ELM_Mount();
-    
+
     struct stat st = {0};
     if (stat("fat1:/ntrboot", &st) == -1)
     {
@@ -602,4 +603,18 @@ void handleInject()
             return;
         }
     }
+}
+
+// Platform specific, should find a better way to handle these in the future.
+// Works okay for now. >_>
+void Flashcart::platformInit(){
+    Cart_NTRInit();
+}
+
+void Flashcart::sendCommand(const uint8_t *cmdbuf, uint16_t response_len, uint8_t *resp) {
+    NTR_SendCommand(cmdbuf, response_len, 32, resp);
+}
+
+void Flashcart::showProgress(uint32_t current, uint32_t total) {
+    ShowProgress(TOP_SCREEN, current, total);
 }
