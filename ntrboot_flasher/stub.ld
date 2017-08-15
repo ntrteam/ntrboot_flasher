@@ -26,10 +26,10 @@ __sp_usr	=	__sp_irq - 0x100;
 
 SECTIONS
 {
-	.init	:
+	.crt0	:
 	{
 		__text_start = . ;
-		KEEP (*(.init))
+		KEEP (*(.crt0))
 		. = ALIGN(4);  /* REQUIRED. LD is flaky without it. */
 	} >ewram = 0xff
 
