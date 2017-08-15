@@ -7,7 +7,7 @@ For details on how ntrboot works, see the last few pages of [33.5c3](https://sci
 ![From Left to Right: Acekard 2i HW81, Acekard 2i HW44, R4i Gold 3DS RTS, R4 3D Revolution](https://i.hentai.design/uploads/big/d3a079d193ded4659a9f962556d4bc7b.jpg)
  - Acekard 2i HW-44
  - Acekard 2i HW-81
- - R4i Gold 3DS RTS (r4idsn variant)
+ - R4i Gold 3DS RTS (r4ids variant)
  - R4 3D Revolution (r4idsn variant)
 
 Note that in some rare circumstances, it may be possible for the flashing process to **brick** a counterfeit flashcart and render it permanently unusable. This is unlikely, but nevertheless only the genuine (i.e. from the original manufacturer) versions of the listed flashcarts are officially supported. There is not a good way to test for counterfeit carts, unfortunately, as they usually report the same chip ID and revision as legitimate carts. Note that you are more likely to receive a counterfeit R4 than a counterfeit AK2i. Though there is a chance that many counterfeit versions of the listed flashcarts will work fine, there is too much variance to guarantee that any counterfeit is supported. As such, use this tool at your own risk. 
