@@ -428,7 +428,7 @@ void handleRestoreFlash()
             {
                 DrawStringF(TOP_SCREEN, 10, 90, "Checking %08X", j);
                 ShowProgress(TOP_SCREEN, j, length);
-                if(crc16(flash_memp+j,memp+j,chunk_size))
+                if(mem(flash_memp+j,memp+j,chunk_size))
                 {
                     DrawStringF(TOP_SCREEN, 10, 100, "Writing chunk %08X", j);
                     cart->writeFlash(j, chunk_size, memp+j);
