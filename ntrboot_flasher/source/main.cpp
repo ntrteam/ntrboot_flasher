@@ -239,7 +239,8 @@ void handleMainMenu()
 
 void handleExit()
 {
-    while(!i2cWriteRegister(I2C_DEV_MCU, I2CREGPM_BATTERY, 1));
+    while(!i2cWriteRegister(I2C_DEV_MCU, 0x20, 1));
+    while(true);
 }
 
 void handleDumpFlash()
