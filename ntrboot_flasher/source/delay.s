@@ -11,18 +11,5 @@ ioDelay:
 	subs r0, #1
 	bgt ioDelay
 	bx lr
-	
-.arm
-.global testShit
-.type testShit STT_FUNC
 
-testShit:
-	push {r0-r8, lr}
-	ldr r4, =0x08001000
-	cmp r4, #0
-	.word 0x9D44D74E
-	pop {r0-r8, lr}
-	bx lr
-	
-	.pool
-	
+.pool
