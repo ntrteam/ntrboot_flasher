@@ -21,7 +21,6 @@
 #include "DrawCharacter.h"
 
 #include "i2c.h"
-#include "exceptions.h"
 #include "delay.h"
 #include "blowfish_dev_bin.h"
 #include "blowfish_retail_bin.h"
@@ -183,7 +182,6 @@ int main(int argc, char** argv)
         bottom_screen = (uint8_t*)(*(u32*)0x23FFFE08);
     }
 
-    InstallExceptionHandlers();
     ResetRegisters();
 
     handleMainMenu();
