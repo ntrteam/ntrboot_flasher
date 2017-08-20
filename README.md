@@ -1,5 +1,5 @@
 # ntrboot_flasher
-_A tool to flash that bootrom-hax goodness to your flashcart._ 
+_A tool to flash that bootrom-hax goodness to your flashcart._
 
 For details on how ntrboot works, see the last few pages of [33.5c3](https://sciresm.github.io/33-and-a-half-c3/).
 
@@ -10,13 +10,13 @@ For details on how ntrboot works, see the last few pages of [33.5c3](https://sci
  - R4i Gold 3DS RTS (r4ids variant)
  - R4 3D Revolution (r4idsn variant)
 
-Note that in some rare circumstances, it may be possible for the flashing process to **brick** a counterfeit flashcart and render it permanently unusable. This is unlikely, but nevertheless only the genuine (i.e. from the original manufacturer) versions of the listed flashcarts are officially supported. There is not a good way to test for counterfeit carts, unfortunately, as they usually report the same chip ID and revision as legitimate carts. Note that you are more likely to receive a counterfeit R4 than a counterfeit AK2i. Though there is a chance that many counterfeit versions of the listed flashcarts will work fine, there is too much variance to guarantee that any counterfeit is supported. As such, use this tool at your own risk. 
+Note that in some rare circumstances, it may be possible for the flashing process to **brick** a counterfeit flashcart and render it permanently unusable. This is unlikely, but nevertheless only the genuine (i.e. from the original manufacturer) versions of the listed flashcarts are officially supported. There is not a good way to test for counterfeit carts, unfortunately, as they usually report the same chip ID and revision as legitimate carts. Note that you are more likely to receive a counterfeit R4 than a counterfeit AK2i. Though there is a chance that many counterfeit versions of the listed flashcarts will work fine, there is too much variance to guarantee that any counterfeit is supported. As such, use this tool at your own risk.
 
 ## Installation/Usage
 Instructions are documented at [@Plailect's](https://twitter.com/plailect?lang=en) [3ds.guide](https://3ds.guide) and are heavily recommended over any alternatives.
 
 ## Compiling
-To compile this, you need: 
+To compile this, you need:
 - [devkitARM r47](https://3dbrew.org/wiki/Setting_up_Development_Environment)
 - [firmtool](https://github.com/TuxSH/firmtool)
 - [flashcart_core](https://github.com/kitling/flashcart_core) - This is bundled as a submodule in ntrboot_flasher. When cloning the repo, you **must** use the --recursive option to grab it. Example: `git clone --recursive https://github.com/kitling/ntrboot_flasher.git`
@@ -31,5 +31,6 @@ While we initially planned to support more carts on release, we have not been ab
 [@hedgeberg](https://twitter.com/hedgeberg) for testing and flashcart RE.  
 [@stuckpixel](https://twitter.com/pixel_stuck) for testing.  
 [@Myria](https://twitter.com/Myriachan) for testing.  
+[@Hikari](https://twitter.com/yuukishiroko) for testing.
 
 Huge props to [@d3m3vilurr](https://twitter.com/d3m3vilurr) for figuring this out independently!
