@@ -19,7 +19,6 @@
 
 #include "misc.h"
 #include "DrawCharacter.h"
-#include "cache.h"
 
 #include "i2c.h"
 #include "exceptions.h"
@@ -428,7 +427,7 @@ void handleRestoreFlash()
             {
                 DrawStringF(TOP_SCREEN, 10, 90, "Checking %08X", j);
                 ShowProgress(TOP_SCREEN, j, length);
-                if(mem(flash_memp+j,memp+j,chunk_size))
+                if(memcmp(flash_memp+j,memp+j,chunk_size) != 0)
                 {
                     DrawStringF(TOP_SCREEN, 10, 100, "Writing chunk %08X", j);
                     cart->writeFlash(j, chunk_size, memp+j);
