@@ -122,45 +122,6 @@ void FlushLog()
     fclose(log_file);
 }
 
-void ResetDSP()
-{
-    *(uint8_t *)0x10140000 = -128;
-    *(uint8_t *)0x10140001 = -124;
-    *(uint8_t *)0x10140002 = -120;
-    *(uint8_t *)0x10140003 = -116;
-    *(uint8_t *)0x10140004 = -112;
-    *(uint8_t *)0x10140005 = -108;
-    *(uint8_t *)0x10140006 = -104;
-    *(uint8_t *)0x10140007 = -100;
-    *(uint8_t *)0x10140008 = -128;
-    *(uint8_t *)0x10140009 = -124;
-    *(uint8_t *)0x1014000A = -120;
-    *(uint8_t *)0x1014000B = -116;
-    *(uint8_t *)0x1014000C = -112;
-    *(uint8_t *)0x1014000D = -108;
-    *(uint8_t *)0x1014000E = -104;
-    *(uint8_t *)0x1014000F = -100;
-}
-
-void ResetRegisters()
-{
-    *(uint8_t *)0x10141230 = 2;
-    //Delay2(10);
-    *(uint8_t *)0x10141230 = 3;
-    //Delay2(10);
-
-    ResetDSP();
-
-    //Clear NDMA
-    for (int i = 0; i <= 7; ++i )
-        *(uint32_t *)((28 * i) + 0x1000201C) = (unsigned int)(2 * *(uint32_t *)((28 * i) + 0x1000201C)) >> 1;
-
-    *(uint32_t *)0x1000C020 = 0;
-    *(uint32_t *)0x1000C02C = -1;
-
-    ClearScreen(TOP_SCREEN, RGB(0, 0, 0));
-}
-
 /*-----------------------------------------------------------------
 main
 This is the main for the code running on arm9
@@ -170,19 +131,9 @@ int main(int argc, char** argv)
     *(volatile u32*)0x10000020 = 0; // InitFS stuff
     *(volatile u32*)0x10000020 = 0x200; // InitFS stuff
 
-    // Fetch the framebuffer addresses
-    if(argc >= 2) {
-        // newer entrypoints
-        uint8_t **fb = (uint8_t **)(void *)argv[1];
-        top_screen = fb[0];
-        bottom_screen = fb[2];
-    } else {
-        // outdated entrypoints
-        top_screen = (uint8_t*)(*(u32*)0x23FFFE00);
-        bottom_screen = (uint8_t*)(*(u32*)0x23FFFE08);
-    }
-
-    ResetRegisters();
+    uint8_t **fb = (uint8_t **)(void *)argv[1];
+    top_screen = fb[0];
+    bottom_screen = fb[2];
 
     handleMainMenu();
 

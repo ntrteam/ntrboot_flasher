@@ -18,7 +18,7 @@ include $(DEVKITARM)/ds_rules
 #---------------------------------------------------------------------------------
 export TARGET		:=	$(shell basename $(CURDIR))
 BUILD		:=	build
-SOURCES		:=	ds source source/firm_loader source/gamecart source/flashcart_core source/flashcart_core/devices
+SOURCES		:=	source source/gamecart source/flashcart_core source/flashcart_core/devices
 DATA		:=	data
 INCLUDES	:=	include source source/firm_loader source/gamecart source/devices
 
