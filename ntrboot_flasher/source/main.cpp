@@ -75,7 +75,7 @@ uint16_t crc16(uint8_t *buf, int len) {
     int counter;
     uint16_t crc = 0;
     for (counter = 0; counter < len; counter++)
-            crc = (crc<<8) ^ crc16tab[((crc>>8) ^ *buf++)&0x00FF];
+        crc = (crc<<8) ^ crc16tab[((crc>>8) ^ *buf++)&0x00FF];
     return crc;
 }
 
@@ -129,7 +129,6 @@ void printMenuOptions(int menuOption)
     for(int i=0; i<MMOPTION_MAX; i++)
         DrawStringF(TOP_SCREEN, 10, 30 + (2+i)*8, options[i]);
 
-    //DrawHexWithName(TOP_SCREEN, "MenuOption = ", menuOption, 220, 1, RGB(0, 0, 0), bgcolor);
     DrawStringF(TOP_SCREEN, 1, (30 + ((2+menuOption)*8)), ">");
 }
 
