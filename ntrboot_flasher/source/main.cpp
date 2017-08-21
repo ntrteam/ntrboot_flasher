@@ -79,47 +79,10 @@ uint16_t crc16(uint8_t *buf, int len) {
     return crc;
 }
 
-
-FILE *log_file = NULL;
-
 int file_exist (const char *filename)
 {
     struct stat   buffer;
     return (stat (filename, &buffer) == 0);
-}
-
-//---------------------------------------------------------------------------------
-ssize_t file_write(struct _reent *r, void *fd, const char *ptr, size_t len) {
-//---------------------------------------------------------------------------------
-    if(len > 1)
-    {
-        fprintf(log_file,"%.*s",len,ptr);
-    }
-    return len;
-}
-
-static const devoptab_t dotab_file = {
-    "file",
-    0,
-    NULL,
-    NULL,
-    file_write,
-    NULL,
-    NULL,
-    NULL
-};
-
-void OpenLog(char * filename)
-{
-    log_file = fopen(filename,"wb");
-    devoptab_list[STD_OUT] = &dotab_file;
-    int buffertype = _IOLBF;
-    setvbuf(stdout, NULL , buffertype, 0);
-}
-
-void FlushLog()
-{
-    fclose(log_file);
 }
 
 /*-----------------------------------------------------------------
