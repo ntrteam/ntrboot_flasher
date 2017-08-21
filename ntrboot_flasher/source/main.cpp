@@ -237,6 +237,7 @@ void handleRestoreFlash()
         DrawStringF(TOP_SCREEN, 10, 140, "Please prepare this folder and try again");
         DrawStringF(TOP_SCREEN, 10, 160, "Press B to return to the main menu.");
         while(!(KEYS & KEY_B));
+        ELM_Unmount();
         return;
     }
 
@@ -320,6 +321,7 @@ void handleInject()
         DrawStringF(TOP_SCREEN, 10, 140, "Please prepare this folder and try again");
         DrawStringF(TOP_SCREEN, 10, 160, "Press B to return to the main menu.");
         while(!(KEYS & KEY_B));
+        ELM_Unmount();
     }
 
     if(!file_exist("fat1:/ntrboot/backup.bin"))
