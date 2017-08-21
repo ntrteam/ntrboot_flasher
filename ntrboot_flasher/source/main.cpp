@@ -91,6 +91,8 @@ This is the main for the code running on arm9
 -----------------------------------------------------------------*/
 int main(int argc, char** argv)
 {
+    if(argc < 2)
+        handleExit();
     *(volatile u32*)0x10000020 = 0; // InitFS stuff
     *(volatile u32*)0x10000020 = 0x200; // InitFS stuff
 
@@ -228,7 +230,7 @@ void handleDumpFlash()
         cart->readFlash(0, length, memp);
 
         //Create folder if it doesn't exist
-        struct stat st = {0};
+        struct stat st;
         if (stat("fat1:/ntrboot", &st) == -1) {
             mkdir("fat1:/ntrboot", 0700);
         }
@@ -284,7 +286,7 @@ void handleRestoreFlash()
 
     ELM_Mount();
 
-    struct stat st = {0};
+    struct stat st;
     if (stat("fat1:/ntrboot", &st) == -1)
     {
         DrawStringF(TOP_SCREEN, 10, 130, "ntrboot folder not found on sd!");
@@ -336,7 +338,7 @@ void handleRestoreFlash()
 
             int written_chunk = 0;
             const int chunk_size = 64*1024;
-            for(int j=0; j<length; j+=chunk_size)
+            for(uint32_t j=0; j<length; j+=chunk_size)
             {
                 DrawStringF(TOP_SCREEN, 10, 90, "Checking %08X", j);
                 ShowProgress(TOP_SCREEN, j, length);
@@ -382,7 +384,7 @@ void handleInject()
 {
     ELM_Mount();
 
-    struct stat st = {0};
+    struct stat st;
     if (stat("fat1:/ntrboot", &st) == -1)
     {
         DrawStringF(TOP_SCREEN, 10, 130, "ntrboot folder not found on sd!");
