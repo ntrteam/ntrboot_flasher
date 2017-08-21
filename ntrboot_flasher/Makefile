@@ -86,8 +86,10 @@ else
 endif
 #---------------------------------------------------------------------------------
 
-export OFILES	:= $(addsuffix .o,$(BINFILES)) \
-			$(CPPFILES:.cpp=.o) $(CFILES:.c=.o) $(SFILES:.s=.o)
+export OFILES_BIN	:= $(addsuffix .o,$(BINFILES))
+export OFILES_SRC	:= $(CPPFILES:.cpp=.o) $(CFILES:.c=.o) $(SFILES:.s=.o)
+export OFILES := $(OFILES_BIN) $(OFILES_SRC)
+export HFILES	:= $(addsuffix .h,$(subst .,_,$(BINFILES)))
 
 export INCLUDE	:=	$(foreach dir,$(INCLUDES),-I$(CURDIR)/$(dir)) \
 			$(foreach dir,$(LIBDIRS),-I$(dir)/include) \
@@ -102,7 +104,7 @@ all: $(BUILD) firm
 
 $(BUILD):
 	@[ -d $@ ] || mkdir -p $@
-	@make --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
+	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
 	
 firm: $(BUILD)
 	@firmtool build $(OUTPUT).firm -n 0x20600000 -e 0 -D $(OUTPUT).bin -A 0x20600000 -C NDMA -i
@@ -124,6 +126,8 @@ DEPENDS	:=	$(OFILES:.o=.d)
 $(OUTPUT).bin	:	$(OUTPUT).elf
 $(OUTPUT).elf	:	$(OFILES)
 
+$(OFILES_SRC)	: $(HFILES)
+
 
 #---------------------------------------------------------------------------------
 %.bin: %.elf
@@ -131,7 +135,7 @@ $(OUTPUT).elf	:	$(OFILES)
 	@echo built ... $(notdir $@)
 	
 #---------------------------------------------------------------------------------
-%.bin.o	:	%.bin
+%_bin.h %.bin.o	:	%.bin
 #---------------------------------------------------------------------------------
 	@echo $(notdir $<)
 	@$(bin2o)
