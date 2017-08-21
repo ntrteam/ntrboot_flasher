@@ -35,6 +35,11 @@ SECTIONS
 
 	.plt : { *(.plt) } >ewram = 0xff
 
+	.init :
+	{
+		KEEP (*(SORT_NONE(.init)))
+	} >ewram = 0xff
+
 	.text :   /* ALIGN (4): */
 	{
 		*(EXCLUDE_FILE (*.itcm*) .text)
