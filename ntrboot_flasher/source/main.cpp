@@ -145,33 +145,33 @@ void handleMainMenu()
 
         while(pad == KEYS);
         pad = KEYS;
-        while(0xFFF != KEYS); //Wait for key to be let go
+        while(KEYS != 0); //Wait for key to be let go
 
-        if(!(pad & KEY_DOWN))
+        if(pad & KEY_DOWN)
         {
             menuOption++;
             ClearScreen(TOP_SCREEN, DBG_COLOR_BG);
         }
 
-        if(!(pad & KEY_UP))
+        if(pad & KEY_UP)
         {
             menuOption--;
             ClearScreen(TOP_SCREEN, DBG_COLOR_BG);
         }
 
-        if(!(pad & KEY_RIGHT))
+        if(pad & KEY_RIGHT)
         {
-            menuOption+=5;
+            menuOption += 5;
             ClearScreen(TOP_SCREEN, DBG_COLOR_BG);
         }
 
-        if(!(pad & KEY_LEFT))
+        if(pad & KEY_LEFT)
         {
-            menuOption-=5;
+            menuOption -= 5;
             ClearScreen(TOP_SCREEN, DBG_COLOR_BG);
         }
 
-        if(!(pad & KEY_A))
+        if(pad & KEY_A)
         {
             ClearScreen(TOP_SCREEN, DBG_COLOR_BG);
             switch(menuOption)
@@ -250,14 +250,7 @@ void handleDumpFlash()
     ELM_Unmount();
 
     DrawStringF(TOP_SCREEN, 10, 160, "Press B to return to the main menu.");
-    while(1)
-    {
-        uint32_t pad = KEYS;
-        if(!(pad & KEY_B))
-        {
-            return;
-        }
-    }
+    while(!(KEYS & KEY_B));
 }
 
 void handleRestoreFlash()
@@ -267,17 +260,13 @@ void handleRestoreFlash()
 
     DrawStringF(TOP_SCREEN, 10, 40, "Press Y if you want to proceed.");
     DrawStringF(TOP_SCREEN, 10, 50, "Press B to return to the main menu.");
-    while(1)
+    while(true)
     {
         uint32_t pad = KEYS;
-        if(!(pad & KEY_B))
-        {
+        if(pad & KEY_B)
             return;
-        }
-        if(!(pad & KEY_Y))
-        {
+        else if(pad & KEY_Y)
             break;
-        }
     }
 
     ClearScreen(TOP_SCREEN, DBG_COLOR_BG);
@@ -291,14 +280,8 @@ void handleRestoreFlash()
         DrawStringF(TOP_SCREEN, 10, 130, "ntrboot folder not found on sd!");
         DrawStringF(TOP_SCREEN, 10, 140, "Please prepare this folder and try again");
         DrawStringF(TOP_SCREEN, 10, 160, "Press B to return to the main menu.");
-        while(1)
-        {
-            uint32_t pad = KEYS;
-            if(!(pad & KEY_B))
-            {
-                return;
-            }
-        }
+        while(!(KEYS & KEY_B));
+        return;
     }
 
     FILE *f = fopen("fat1:/ntrboot/backup.bin","rb");
@@ -362,21 +345,12 @@ void handleRestoreFlash()
         free(mem);
     }
     else
-    {
         DrawStringF(TOP_SCREEN, 10, 150, "Restore file was not found.");
-    }
     ELM_Unmount();
 
     ShowProgress(TOP_SCREEN, 0, 0);
     DrawStringF(TOP_SCREEN, 10, 160, "Press B to return to the main menu.");
-    while(1)
-    {
-        uint32_t pad = KEYS;
-        if(!(pad & KEY_B))
-        {
-            return;
-        }
-    }
+    while(!(KEYS & KEY_B));
 }
 
 void handleInject()
@@ -389,14 +363,7 @@ void handleInject()
         DrawStringF(TOP_SCREEN, 10, 130, "ntrboot folder not found on sd!");
         DrawStringF(TOP_SCREEN, 10, 140, "Please prepare this folder and try again");
         DrawStringF(TOP_SCREEN, 10, 160, "Press B to return to the main menu.");
-        while(1)
-        {
-            uint32_t pad = KEYS;
-            if(!(pad & KEY_B))
-            {
-                return;
-            }
-        }
+        while(!(KEYS & KEY_B));
     }
 
     if(!file_exist("fat1:/ntrboot/backup.bin"))
@@ -404,15 +371,9 @@ void handleInject()
         DrawStringF(TOP_SCREEN, 10, 20, "No backup of flash detected.");
         DrawStringF(TOP_SCREEN, 10, 30, "Please dump your flash first then run this again.");
         DrawStringF(TOP_SCREEN, 10, 160, "Press B to return to the main menu.");
-        while(1)
-        {
-            uint32_t pad = KEYS;
-            if(!(pad & KEY_B))
-            {
-                ELM_Unmount();
-                return;
-            }
-        }
+        while(!(KEYS & KEY_B));
+        ELM_Unmount();
+        return;
     }
 
     ClearScreen(TOP_SCREEN, DBG_COLOR_BG);
@@ -420,23 +381,20 @@ void handleInject()
 
     DrawStringF(TOP_SCREEN, 10, 40, "Press Y if you want to proceed.");
     DrawStringF(TOP_SCREEN, 10, 50, "Press B to return to the main menu.");
-    while(1)
+    while(true)
     {
         uint32_t pad = KEYS;
-        if(!(pad & KEY_B))
+        if(pad & KEY_B)
         {
             ELM_Unmount();
             return;
         }
-        if(!(pad & KEY_Y))
-        {
+        else if(!(pad & KEY_Y))
             break;
-        }
     }
 
     ClearScreen(TOP_SCREEN, DBG_COLOR_BG);
     DrawStringF(TOP_SCREEN, 10, 20, "Injecting Ntrboot");
-
 
     DrawStringF(TOP_SCREEN, 10, 40, "Press L for developer unit ntrboot");
     DrawStringF(TOP_SCREEN, 10, 50, "Press R for retail unit ntrboot");
@@ -445,22 +403,22 @@ void handleInject()
     FILE *f = NULL;
     uint8_t *blowfish_key = NULL;
 
-    while(1)
+    while(true)
     {
         uint32_t pad = KEYS;
-        if(!(pad & KEY_L))
+        if(pad & KEY_L)
         {
             f = fopen("fat1:/ntrboot/boot9strap_ntr_dev.firm","rb");
             blowfish_key = (uint8_t *)blowfish_dev_bin;
             break;
         }
-        if(!(pad & KEY_R))
+        if(pad & KEY_R)
         {
             f = fopen("fat1:/ntrboot/boot9strap_ntr.firm","rb");
             blowfish_key = (uint8_t *)blowfish_retail_bin;
             break;
         }
-        if(!(pad & KEY_B))
+        if(pad & KEY_B)
         {
             ELM_Unmount();
             return;
@@ -501,21 +459,12 @@ void handleInject()
         free(firm);
     }
     else
-    {
         DrawStringF(TOP_SCREEN, 10, 150, "Firm was not found.");
-    }
 
     ELM_Unmount();
 
     DrawStringF(TOP_SCREEN, 10, 160, "Press B to return to the main menu.");
-    while(1)
-    {
-        uint32_t pad = KEYS;
-        if(!(pad & KEY_B))
-        {
-            return;
-        }
-    }
+    while(!(KEYS & KEY_B));
 }
 
 // Platform specific, should find a better way to handle these in the future.

@@ -4,7 +4,7 @@
 #include <inttypes.h>
 #include "3dstypes.h"
 
-#define KEYS                        (*(volatile uint32_t*)0x10146000)
+#define KEYS                        ((*(volatile uint16_t*)0x10146000) ^ 0xFFF)
 #define KEY_A                       (1<<0)
 #define KEY_B                       (1<<1)
 #define KEY_SELECT                  (1<<2)
