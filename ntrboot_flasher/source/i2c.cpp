@@ -22,26 +22,26 @@ static inline uint8_t i2cGetDeviceRegAddr(uint8_t device_id)
 
 //-----------------------------------------------------------------------------
 
-static vuint8_t *reg_data_addrs[] = {
-    (vuint8_t *)(I2C1_REG_OFF + I2C_REG_DATA),
-    (vuint8_t *)(I2C2_REG_OFF + I2C_REG_DATA),
-    (vuint8_t *)(I2C3_REG_OFF + I2C_REG_DATA),
+static volatile uint8_t *reg_data_addrs[] = {
+    (volatile uint8_t *)(I2C1_REG_OFF + I2C_REG_DATA),
+    (volatile uint8_t *)(I2C2_REG_OFF + I2C_REG_DATA),
+    (volatile uint8_t *)(I2C3_REG_OFF + I2C_REG_DATA),
 };
 
-static inline vuint8_t *i2cGetDataReg(uint8_t bus_id)
+static inline volatile uint8_t *i2cGetDataReg(uint8_t bus_id)
 {
     return reg_data_addrs[bus_id];
 }
 
 //-----------------------------------------------------------------------------
 
-static vuint8_t *reg_cnt_addrs[] = {
-    (vuint8_t *)(I2C1_REG_OFF + I2C_REG_CNT),
-    (vuint8_t *)(I2C2_REG_OFF + I2C_REG_CNT),
-    (vuint8_t *)(I2C3_REG_OFF + I2C_REG_CNT),
+static volatile uint8_t *reg_cnt_addrs[] = {
+    (volatile uint8_t *)(I2C1_REG_OFF + I2C_REG_CNT),
+    (volatile uint8_t *)(I2C2_REG_OFF + I2C_REG_CNT),
+    (volatile uint8_t *)(I2C3_REG_OFF + I2C_REG_CNT),
 };
 
-static inline vuint8_t *i2cGetCntReg(uint8_t bus_id)
+static inline volatile uint8_t *i2cGetCntReg(uint8_t bus_id)
 {
     return reg_cnt_addrs[bus_id];
 }

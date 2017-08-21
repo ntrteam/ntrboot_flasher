@@ -2,7 +2,7 @@
 
 #include <cstddef>
 #include <inttypes.h>
-#include "3dstypes.h"
+#include "types.h"
 
 #define KEYS                        ((*(volatile uint16_t*)0x10146000) ^ 0xFFF)
 #define KEY_A                       (1<<0)

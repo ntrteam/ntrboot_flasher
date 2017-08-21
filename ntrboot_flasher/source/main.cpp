@@ -11,7 +11,6 @@
 #include <inttypes.h>
 #include <limits.h>
 #include <sys/iosupport.h>
-#include "3dstypes.h"
 
 #include "gamecart/protocol.h"
 #include "gamecart/protocol_ntr.h"
