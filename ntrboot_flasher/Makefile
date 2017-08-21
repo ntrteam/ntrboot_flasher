@@ -30,10 +30,11 @@ LIBELM := $(CURDIR)/../libelm
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------
-ARCH	:=	-mthumb-interwork
+ARCH	:=	-marm
 
 CFLAGS	:=	-g -O2\
 			-march=armv5te -mtune=arm946e-s -fomit-frame-pointer\
+			-ffunction-sections -fdata-sections\
 			-ffast-math -fdiagnostics-color=always -fno-use-cxa-atexit\
 			$(ARCH)
 
@@ -42,7 +43,7 @@ CFLAGS	+=	$(INCLUDE) -DARM9 -D_GNU_SOURCE
 CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions
 
 ASFLAGS	:=	-g $(ARCH)
-LDFLAGS	=	-g --specs=../stub.specs $(ARCH) -Wl,-Map,$(TARGET).map
+LDFLAGS	=	-g --specs=../stub.specs $(ARCH) -Wl,-Map,$(TARGET).map,--gc-sections
 
 LIBS	:= -lelm
 
