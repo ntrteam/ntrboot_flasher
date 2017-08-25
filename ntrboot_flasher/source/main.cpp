@@ -80,7 +80,7 @@ const char *options[]={
 
 void printMenuOptions(int menuOption)
 {
-    DrawStringF(TOP_SCREEN, 20, 20, "ntrboot flasher 0.1.2");
+    DrawStringF(TOP_SCREEN, 20, 20, "ntrboot flasher 0.1.3");
 
     for(int i=0; i<MMOPTION_MAX; i++)
         DrawStringF(TOP_SCREEN, 10, 30 + (2+i)*8, options[i]);
