@@ -1,7 +1,5 @@
-ntrboot_flasher/build
-ntrboot_flasher/*.bin
-libelm/build
-libelm/lib
+build
+ntrboot_flasher.*
 *.firm
 *.firm.sha
 *.o

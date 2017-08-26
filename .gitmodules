@@ -1,3 +1,6 @@
 [submodule "ntrboot_flasher/source/flashcart_core"]
-	path = ntrboot_flasher/source/flashcart_core
+	path = source/flashcart_core
 	url = https://github.com/kitling/flashcart_core.git
+[submodule "libelm3ds"]
+	path = libelm3ds
+	url = https://github.com/Normmatt/libelm3ds.git
