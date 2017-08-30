@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "../misc.h"
+#include "common.h"
 
 #define REG_NTRCARDMCNT    (*(vu16*)0x10164000)
 #define REG_NTRCARDMCNTL   (*(vu8*)0x10164000)
@@ -65,3 +65,6 @@
 #define NTRKEY_PARAM 0
 
 void NTR_SendCommand(const u8 command[8], u32 pageSize, u32 latency, void* buffer);
+void NTR_CmdReset(void);
+u32 NTR_CmdGetCartId(void);
+void NTR_CmdReadHeader (u8* buffer);

@@ -3,21 +3,15 @@
 // Refer to the license.txt file included.
 
 #include "protocol.h"
-
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
-
-#include "DrawCharacter.h"
-#include "misc.h"
 #include "protocol_ntr.h"
+
 #include "delay.h"
 
-// TODO: Verify
+uint32_t CartID = 0xFFFFFFFFu;
+
 void ResetCartSlot(void)
 {
     REG_CARDCONF2 = 0x0C;
-    //REG_CARDCONF &= ~0x100;
     REG_CARDCONF &= ~3;
 
     if (REG_CARDCONF2 == 0xC) {
@@ -32,12 +26,6 @@ void ResetCartSlot(void)
 
     REG_CARDCONF2 = 0x8;
     while(REG_CARDCONF2 != 0x8);
-
-	// ioDelay(0xF000);
-    //
-	// SwitchToNTRCARD();
-    //
-	// ioDelay(0xF000);
 }
 
 void SwitchToNTRCARD(void)
@@ -48,7 +36,23 @@ void SwitchToNTRCARD(void)
     REG_NTRCARDMCNTH = NTRCARD_CR1_ENABLE;
 }
 
-void Cart_NTRInit(void)
+uint32_t Cart_GetID(void)
+{
+    return CartID;
+}
+
+void Cart_Reset(void)
+{
+    ResetCartSlot(); //Seems to reset the cart slot?
+
+    REG_CTRCARDSECCNT &= 0xFFFFFFFB;
+    ioDelay(0x40000);
+
+    SwitchToNTRCARD();
+    ioDelay(0x40000);
+}
+
+void Cart_Init(void)
 {
 	ResetCartSlot(); //Seems to reset the cart slot?
 
@@ -58,9 +62,6 @@ void Cart_NTRInit(void)
 	SwitchToNTRCARD();
     ioDelay(0x40000);
 
-	//REG_CTRCARDCNT |= 0x10000000u;
-	//REG_CTRCARDCNT2 |= 0x10000000u;
-
     REG_NTRCARDROMCNT = 0;
     REG_NTRCARDMCNT = 0;
     ioDelay(0x40000);
@@ -68,4 +69,8 @@ void Cart_NTRInit(void)
     REG_NTRCARDMCNTH = (NTRCARD_CR1_ENABLE | NTRCARD_CR1_IRQ);
     REG_NTRCARDROMCNT = NTRCARD_nRESET | NTRCARD_SEC_SEED;
     while (REG_NTRCARDROMCNT & NTRCARD_BUSY);
+
+    NTR_CmdReset();
+    ioDelay(0x40000);
+    CartID = NTR_CmdGetCartId();
 }

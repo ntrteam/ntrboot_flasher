@@ -3,7 +3,7 @@
 // Refer to the license.txt file included.
 
 #pragma once
-#include "../misc.h"
+#include "common.h"
 
 #define REG_CARDCONF  (*(vu16*)0x1000000C)
 #define REG_CARDCONF2 (*(vu8*)0x10000010)
@@ -19,6 +19,7 @@
 
 #define LATENCY 0x822C
 
-void Cart_NTRInit(void);
+void Cart_Init(void);
+uint32_t Cart_GetID(void);
 void SwitchToNTRCARD(void);
 void ResetCartSlot(void);
