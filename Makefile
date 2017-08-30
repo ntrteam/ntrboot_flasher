@@ -18,15 +18,14 @@ include $(DEVKITARM)/ds_rules
 #---------------------------------------------------------------------------------
 export TARGET		:=	$(shell basename $(CURDIR))
 BUILD		:=	build
-SOURCES		:=	source source/gamecart source/flashcart_core source/flashcart_core/devices
+SOURCES		:=	source source/common source/gamecart flashcart_core flashcart_core/devices
 DATA		:=	data
-INCLUDES	:=	include source source/firm_loader source/gamecart source/devices
+INCLUDES	:=	source source/common source/gamecart flashcart_core  flashcart_core/devices
 
 #---------------------------------------------------------------------------------
 # Setup some defines
 #---------------------------------------------------------------------------------
 LIBELM := $(CURDIR)/libelm3ds
-$(info $$var is [${LIBELM}])
 
 #---------------------------------------------------------------------------------
 # options for code generation
