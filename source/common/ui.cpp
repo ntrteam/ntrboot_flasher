@@ -163,14 +163,10 @@ bool ShowPrompt(uint8_t *screen, bool ask, const char *format, ...)
     DrawStringF(screen, x, y, STD_COLOR_FONT, STD_COLOR_BG, str);
     DrawStringF(screen, x, y + str_height - (1*10), STD_COLOR_FONT, STD_COLOR_BG, (ask) ? "(<A> yes, <B> no)" : "(<A> to continue)");
     
-    while (true) {
-        if (CheckButton(BUTTON_A)) break;
-        if (CheckButton(BUTTON_B)) {
-            ret = false;
-            break;
-        }
-    }
-    
+    uint32_t keys = WaitButton(BUTTON_A | BUTTON_B);
+    if (keys & BUTTON_A) ret = true;
+    if (keys & BUTTON_B) ret = false;
+
     ClearScreen(screen, STD_COLOR_BG);
     
     return ret;
