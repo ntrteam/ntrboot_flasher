@@ -11,5 +11,5 @@ void Flashcart::sendCommand(const uint8_t *cmdbuf, uint16_t response_len, uint8_
 }
 
 void Flashcart::showProgress(uint32_t current, uint32_t total) {
-    ShowProgress(BOTTOM_SCREEN, current, total);
+    ShowProgress(TOP_SCREEN, current, total);
 }

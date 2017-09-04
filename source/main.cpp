@@ -67,7 +67,6 @@ int main(int argc, char** argv)
 
 void ntrboot_flasher()
 {
-    menu_draw_info();
     if (!menu_show_intro_warning())
         return;
 
@@ -127,8 +126,8 @@ void handle_exit()
 }
 
 void ntrboot_dump_flash() {
-    ClearScreen(BOTTOM_SCREEN, STD_COLOR_BG);
-    DrawStringF(BOTTOM_SCREEN, 10, 20, STD_COLOR_FONT, STD_COLOR_BG, "Dumping flash");
+    ClearScreen(TOP_SCREEN, STD_COLOR_BG);
+    DrawStringF(TOP_SCREEN, 10, 20, STD_COLOR_FONT, STD_COLOR_BG, "Dumping flash");
 
     ELM_Mount();
 
@@ -138,7 +137,7 @@ void ntrboot_dump_flash() {
     if (mem == NULL)
         ShowPrompt(BOTTOM_SCREEN, false, "Failed to allocate memory"); 
 
-    ShowProgress(BOTTOM_SCREEN, 0, 0);
+    ShowProgress(TOP_SCREEN, 0, 0);
     selected_flashcart->readFlash(0, length, mem);
 
     ShowPrompt(BOTTOM_SCREEN, false, "Read from flash successfully.");
@@ -155,19 +154,19 @@ void ntrboot_dump_flash() {
     fclose(f);
 
     free(mem);
-    ShowProgress(BOTTOM_SCREEN, 0, 0);
+    ShowProgress(TOP_SCREEN, 0, 0);
 
-    DrawStringF(BOTTOM_SCREEN, 10, 150, COLOR_GREEN, STD_COLOR_BG, "Dump Complete!");  
+    DrawStringF(TOP_SCREEN, 10, 150, COLOR_GREEN, STD_COLOR_BG, "Dump Complete!");  
     ELM_Unmount();
 
-    DrawStringF(BOTTOM_SCREEN, 10, 160, STD_COLOR_FONT, STD_COLOR_BG, "Press <A> to return to the main menu.");    
+    DrawStringF(TOP_SCREEN, 10, 160, STD_COLOR_FONT, STD_COLOR_BG, "Press <A> to return to the main menu.");    
 
-    while(!CheckButton(BUTTON_A));
+    WaitButton(BUTTON_A);
 }
 
 void ntrboot_restore_flash() {
-    ClearScreen(BOTTOM_SCREEN, STD_COLOR_BG);
-    DrawStringF(BOTTOM_SCREEN, 10, 20, STD_COLOR_FONT, STD_COLOR_BG, "Restoring flash");
+    ClearScreen(TOP_SCREEN, STD_COLOR_BG);
+    DrawStringF(TOP_SCREEN, 10, 20, STD_COLOR_FONT, STD_COLOR_BG, "Restoring flash");
 
     ELM_Mount();
 
@@ -190,50 +189,69 @@ void ntrboot_restore_flash() {
         uint8_t* flash_mem = (uint8_t*)memalign(4,flash_length);
         uint8_t* flash_memp = flash_mem;
 
-        DrawStringF(BOTTOM_SCREEN, 10, 40, STD_COLOR_FONT, STD_COLOR_BG, "Reading...");
-        ShowProgress(BOTTOM_SCREEN, 0, 0);
+        DrawStringF(TOP_SCREEN, 10, 40, STD_COLOR_FONT, STD_COLOR_BG, "Reading...");
+        ShowProgress(TOP_SCREEN, 0, 0);
         selected_flashcart->readFlash(0, length, flash_memp);
 
         int written_chunk = 0;
         const int chunk_size = 64*1024;
         for(uint32_t j=0; j<length; j+=chunk_size)
         {
-            DrawStringF(BOTTOM_SCREEN, 10, 50, STD_COLOR_FONT, STD_COLOR_BG, "Checking %08X", j);        
-            ShowProgress(BOTTOM_SCREEN, j, length);
+            DrawStringF(TOP_SCREEN, 10, 50, STD_COLOR_FONT, STD_COLOR_BG, "Checking %08X", j);        
+            ShowProgress(TOP_SCREEN, j, length);
             if(memcmp(flash_memp+j,memp+j,chunk_size) != 0)
             {
-                DrawStringF(BOTTOM_SCREEN, 10, 60, STD_COLOR_FONT, STD_COLOR_BG, "Writing chunk %08X", j);
+                DrawStringF(TOP_SCREEN, 10, 60, STD_COLOR_FONT, STD_COLOR_BG, "Writing chunk %08X", j);
                 selected_flashcart->writeFlash(j, chunk_size, memp+j);
                 written_chunk++;
-                DrawStringF(BOTTOM_SCREEN, 10, 70, STD_COLOR_FONT, STD_COLOR_BG, "Chunks written %d (%08X)", written_chunk, written_chunk);
+                DrawStringF(TOP_SCREEN, 10, 70, STD_COLOR_FONT, STD_COLOR_BG, "Chunks written %d (%08X)", written_chunk, written_chunk);
             }
         }
 
         free(flash_mem);
 
-        DrawStringF(BOTTOM_SCREEN, 10, 90, COLOR_GREEN, STD_COLOR_BG, "Restoring Complete!");        
+        DrawStringF(TOP_SCREEN, 10, 90, COLOR_GREEN, STD_COLOR_BG, "Restoring Complete!");        
 
         free(mem);
     }
     else
-        DrawStringF(BOTTOM_SCREEN, 10, 40, COLOR_RED, STD_COLOR_BG, "Restore file was not found.");
+        DrawStringF(TOP_SCREEN, 10, 40, COLOR_RED, STD_COLOR_BG, "Restore file was not found.");
 
     ELM_Unmount();
 
-    DrawStringF(BOTTOM_SCREEN, 10, 160, STD_COLOR_FONT, STD_COLOR_BG, "Press <A> to return to the main menu.");    
-    while(!CheckButton(BUTTON_A));
+    DrawStringF(TOP_SCREEN, 10, 160, STD_COLOR_FONT, STD_COLOR_BG, "Press <A> to return to the main menu.");    
+    WaitButton(BUTTON_A);
 }
 
 void ntrboot_inject() {
-    ClearScreen(BOTTOM_SCREEN, STD_COLOR_BG);
-    DrawStringF(BOTTOM_SCREEN, 10, 20, STD_COLOR_FONT, STD_COLOR_BG, "Injecting Ntrboot");
+    ClearScreen(TOP_SCREEN, STD_COLOR_BG);
+    DrawStringF(TOP_SCREEN, 10, 20, STD_COLOR_FONT, STD_COLOR_BG, "Injecting Ntrboot");
+
+    DrawStringF(TOP_SCREEN, 10, 40, STD_COLOR_FONT, STD_COLOR_BG, "Press <A> for retail unit ntrboot");    
+    DrawStringF(TOP_SCREEN, 10, 50, STD_COLOR_FONT, STD_COLOR_BG, "Press <Y> for developer unit ntrboot");
+    DrawStringF(TOP_SCREEN, 10, 60, STD_COLOR_FONT, STD_COLOR_BG, "Press <B> to return to the main menu.");
 
     ELM_Mount();
 
-    FILE *f = fopen("fat1:/ntrboot/boot9strap_ntr.firm","rb");;
-    uint8_t *blowfish_key = (uint8_t*)blowfish_retail_bin;
+    FILE *f = NULL;
+    uint8_t *blowfish_key = NULL;
 
-    // todo: ask for dev unit
+    uint32_t button = WaitButton(BUTTON_A | BUTTON_B | BUTTON_Y);
+    if (button & BUTTON_A)
+    {
+        f = fopen("fat1:/ntrboot/boot9strap_ntr.firm","rb");;
+        blowfish_key = (uint8_t*)blowfish_retail_bin;    
+    }
+    else if (button & BUTTON_Y)
+    {
+        f = fopen("fat1:/ntrboot/boot9strap_ntr_dev.firm","rb");
+        blowfish_key = (uint8_t *)blowfish_dev_bin;
+    }
+    else if (button & BUTTON_B)
+    {
+        ELM_Unmount();
+        return;
+    }
     
     if (f != NULL)
     {
@@ -244,16 +262,18 @@ void ntrboot_inject() {
         fread(firm, 1, firm_size, f);    
         fclose(f);
 
-        ShowProgress(BOTTOM_SCREEN, 0, 0);
-        selected_flashcart->injectNtrBoot((uint8_t *)blowfish_retail_bin, firm, firm_size);
-        ShowProgress(BOTTOM_SCREEN, 0, 0);
+        DrawStringF(TOP_SCREEN, 10, 80, COLOR_GREEN, STD_COLOR_BG, "Injecting...");
 
-        DrawStringF(BOTTOM_SCREEN, 10, 40, COLOR_GREEN, STD_COLOR_BG, "Injection Complete!");
+        ShowProgress(TOP_SCREEN, 0, 0);
+        selected_flashcart->injectNtrBoot((uint8_t *)blowfish_retail_bin, firm, firm_size);
+        ShowProgress(TOP_SCREEN, 0, 0);
+
+        DrawStringF(TOP_SCREEN, 10, 90, COLOR_GREEN, STD_COLOR_BG, "Injection Complete!");
     } else
-        DrawStringF(BOTTOM_SCREEN, 10, 40, COLOR_RED, STD_COLOR_BG, "/ntrboot/boot9strap_ntr.firm not found");        
+        DrawStringF(TOP_SCREEN, 10, 80, COLOR_RED, STD_COLOR_BG, "/ntrboot/boot9strap_ntr.firm not found");        
 
     ELM_Unmount();
     
-    DrawStringF(BOTTOM_SCREEN, 10, 60, STD_COLOR_FONT, STD_COLOR_BG, "Press <A> to return to the main menu.");        
-    while(!CheckButton(BUTTON_A));
+    DrawStringF(TOP_SCREEN, 10, 100, STD_COLOR_FONT, STD_COLOR_BG, "Press <A> to return to the main menu.");        
+    WaitButton(BUTTON_A);
 }

@@ -12,7 +12,6 @@ enum
     MENU_MAX
 };
 
-void menu_draw_info();
 bool menu_show_intro_warning();
 void menu_wait_cart_insert();
 int8_t menu_select_flashcart();
