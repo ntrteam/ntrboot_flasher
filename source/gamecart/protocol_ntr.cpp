@@ -3,29 +3,14 @@
 // Refer to the license.txt file included.
 
 #include "protocol_ntr.h"
-#include "DrawCharacter.h"
+#include "delay.h"
 
 void NTR_SendCommand(const u8 command[8], u32 pageSize, u32 latency, void* buffer)
 {
-#ifdef VERBOSE_COMMANDS
-    Debug("N> %08X %08X", command[0], command[1]);
-#endif
-
     REG_NTRCARDMCNTH = NTRCARD_CR1_ENABLE | NTRCARD_CR1_IRQ;
 
-	//REG_NTRCARDCMD32[0] = BSWAP32(command[0]);
-	//REG_NTRCARDCMD32[1] = BSWAP32(command[1]);
-    /*for( u32 i=0; i<2; ++i )
-    {
-        REG_NTRCARDCMD[i*4+0] = command[i]>>24;
-        REG_NTRCARDCMD[i*4+1] = command[i]>>16;
-        REG_NTRCARDCMD[i*4+2] = command[i]>>8;
-        REG_NTRCARDCMD[i*4+3] = command[i]>>0;
-    }*/
 	for( u32 i=0; i<8; ++i )
-    {
         REG_NTRCARDCMD[i] = command[i];
-    }
 
     pageSize -= pageSize & 3; // align to 4 byte
 
@@ -52,8 +37,6 @@ void NTR_SendCommand(const u8 command[8], u32 pageSize, u32 latency, void* buffe
             break;
     }
 
-    // go
-    //REG_NTRCARDROMCNT = NTRCARD_nRESET;
     REG_NTRCARDROMCNT = NTRKEY_PARAM | NTRCARD_ACTIVATE | NTRCARD_nRESET | pageParam | latency;
 
     u8 * pbuf = (u8 *)buffer;
@@ -120,33 +103,51 @@ void NTR_SendCommand(const u8 command[8], u32 pageSize, u32 latency, void* buffe
     // wait rom cs high
     do { cardCtrl = REG_NTRCARDROMCNT; } while( cardCtrl & NTRCARD_BUSY );
     //lastCmd[0] = command[0];lastCmd[1] = command[1];
+}
 
-#ifdef VERBOSE_COMMANDS
-    if (!useBuf) {
-        Debug("N< NULL");
-    } else if (!useBuf32) {
-        Debug("N< non32");
-    } else {
-        u32* p = (u32*)buffer;
-        int transferWords = count / 4;
-        for (int i = 0; i < transferWords && i < 4*4; i += 4) {
-            switch (transferWords - i) {
-            case 0:
-                break;
-            case 1:
-                Debug("N< %08X", p[i+0]);
-                break;
-            case 2:
-                Debug("N< %08X %08X", p[i+0], p[i+1]);
-                break;
-            case 3:
-                Debug("N< %08X %08X %08X", p[i+0], p[i+1], p[i+2]);
-                break;
-            default:
-                Debug("N< %08X %08X %08X %08X", p[i+0], p[i+1], p[i+2], p[i+3]);
-                break;
-            }
-        }
+
+void NTR_CmdReset(void)
+{
+    //cardReset ();
+    ioDelay(0xF000);
+}
+
+u32 NTR_CmdGetCartId(void)
+{
+    return 0;
+    //return cardReadID (0);
+}
+
+void NTR_CmdReadHeader (u8* buffer)
+{
+	REG_NTRCARDROMCNT=0;
+	REG_NTRCARDMCNT=0;
+	ioDelay(167550);
+	REG_NTRCARDMCNT=NTRCARD_CR1_ENABLE|NTRCARD_CR1_IRQ;
+	REG_NTRCARDROMCNT=NTRCARD_nRESET|NTRCARD_SEC_SEED;
+	while(REG_NTRCARDROMCNT&NTRCARD_BUSY) ;
+	//cardReset();
+	while(REG_NTRCARDROMCNT&NTRCARD_BUSY) ;
+	/*u32 iCardId=cardReadID(NTRCARD_CLK_SLOW);
+	while(REG_NTRCARDROMCNT&NTRCARD_BUSY) ;
+	
+	u32 iCheapCard=iCardId&0x80000000;
+	
+    if(iCheapCard)
+    {
+      //this is magic of wood goblins
+      for(size_t ii=0;ii<8;++ii)
+        cardParamCommand(NTRCARD_CMD_HEADER_READ,ii*0x200,NTRCARD_ACTIVATE|NTRCARD_nRESET|NTRCARD_CLK_SLOW|NTRCARD_BLK_SIZE(1)|NTRCARD_DELAY1(0x1FFF)|NTRCARD_DELAY2(0x3F),(u32*)(void*)(buffer+ii*0x200),0x200/sizeof(u32));
     }
-#endif
+    else
+    {
+      //0xac3f1fff
+      cardParamCommand(NTRCARD_CMD_HEADER_READ,0,NTRCARD_ACTIVATE|NTRCARD_nRESET|NTRCARD_CLK_SLOW|NTRCARD_BLK_SIZE(4)|NTRCARD_DELAY1(0x1FFF)|NTRCARD_DELAY2(0x3F),(u32*)(void*)buffer,0x1000/sizeof(u32));
+    }*/
+    //cardReadHeader (buffer);
+}
+
+void NTR_CmdReadData (u32 offset, void* buffer)
+{
+    //cardParamCommand (NTRCARD_CMD_DATA_READ, offset, ReadDataFlags | NTRCARD_ACTIVATE | NTRCARD_nRESET | NTRCARD_BLK_SIZE(1), (u32*)buffer, 0x200 / 4);
 }

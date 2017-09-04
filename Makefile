@@ -18,15 +18,14 @@ include $(DEVKITARM)/ds_rules
 #---------------------------------------------------------------------------------
 export TARGET		:=	$(shell basename $(CURDIR))
 BUILD		:=	build
-SOURCES		:=	source source/gamecart source/flashcart_core source/flashcart_core/devices
+SOURCES		:=	source source/common source/gamecart flashcart_core flashcart_core/devices
 DATA		:=	data
-INCLUDES	:=	include source source/firm_loader source/gamecart source/devices
+INCLUDES	:=	source source/common source/gamecart flashcart_core  flashcart_core/devices
 
 #---------------------------------------------------------------------------------
 # Setup some defines
 #---------------------------------------------------------------------------------
 LIBELM := $(CURDIR)/libelm3ds
-$(info $$var is [${LIBELM}])
 
 #---------------------------------------------------------------------------------
 # options for code generation
@@ -39,7 +38,9 @@ CFLAGS	:=	-g -O2\
 			-ffast-math -fdiagnostics-color=always -fno-use-cxa-atexit\
 			$(ARCH)
 
-CFLAGS	+=	$(INCLUDE) -DARM9 -D_GNU_SOURCE
+CFLAGS	+=	$(INCLUDE) -DARM9 -D_GNU_SOURCE\
+			-DNTRBOOT_FLASHER_VERSION=\"$(NTRBOOT_FLASHER_VERSION)\"\
+			-DFLASHCART_CORE_VERSION=\"$(FLASHCART_CORE_VERSION)\"
 
 CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions
 
@@ -67,6 +68,9 @@ export VPATH	:=	$(foreach dir,$(SOURCES),$(CURDIR)/$(dir)) \
 			$(foreach dir,$(DATA),$(CURDIR)/$(dir))
 
 export DEPSDIR	:=	$(CURDIR)/$(BUILD)
+
+export NTRBOOT_FLASHER_VERSION := $(shell git describe --abbrev=4 --dirty --always --tags)
+export FLASHCART_CORE_VERSION := $(shell git -C flashcart_core describe --abbrev=4 --dirty --always --tags)
 
 CFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
 CPPFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
