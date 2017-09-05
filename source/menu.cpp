@@ -17,14 +17,23 @@ bool menu_show_intro_warning()
 {
     ClearScreen(TOP_SCREEN, COLOR_RED);
     
-    DrawStringF(TOP_SCREEN, 10, 10, COLOR_BLACK, COLOR_RED, "WARNING");
-    DrawStringF(TOP_SCREEN, 10, 20, COLOR_BLACK, COLOR_RED, "-------");
-    DrawStringF(TOP_SCREEN, 10, 40, COLOR_BLACK, COLOR_RED, "This software writes directly to\nyour flashcart to inject ntrboot.");
-    DrawStringF(TOP_SCREEN, 10, 60, COLOR_BLACK, COLOR_RED, "In rare cases this may brick your\nflashcart and leave it unusable.");
-    DrawStringF(TOP_SCREEN, 10, 90, COLOR_BLACK, COLOR_RED, "<A> Continue <B> Exit");
+    DrawStringF(TOP_SCREEN, 10, 10, COLOR_WHITE, COLOR_RED, "WARNING: READ THIS BEFORE CONTINUING");
+    DrawStringF(TOP_SCREEN, 10, 20, COLOR_WHITE, COLOR_RED, "------------------------------------");
+
+    DrawStringF(TOP_SCREEN, 10, 40, COLOR_WHITE, COLOR_RED, "If you don't know what you're doing: STOP. Open your browser to");
+    DrawStringF(TOP_SCREEN, 10, 50, COLOR_WHITE, COLOR_RED, "http://3ds.guide and follow the steps provided there.");
+
+    DrawStringF(TOP_SCREEN, 10, 70, COLOR_WHITE, COLOR_RED, "This software writes directly to your flashcart. It's possible");
+    DrawStringF(TOP_SCREEN, 10, 80, COLOR_WHITE, COLOR_RED, "you may brick your flashcart, rendering it unusable.");
+
+    DrawStringF(TOP_SCREEN, 10, 100, COLOR_WHITE, COLOR_RED, "ALWAYS KEEP A BACKUP");
+
+    DrawStringF(TOP_SCREEN, 10, 120, COLOR_WHITE, COLOR_RED, "<A> Continue <B> Exit");
 
     while (HID_STATE != 0); // bug fix: wait for the HID_STATE to reset
-    return (WaitButton(BUTTON_A | BUTTON_B) & BUTTON_A) == BUTTON_A;
+    bool retval = (WaitButton(BUTTON_A | BUTTON_B) & BUTTON_A) == BUTTON_A;
+    ClearScreen(TOP_SCREEN, COLOR_BLACK);
+    return retval;
 }
 
 int8_t menu_select_flashcart()
