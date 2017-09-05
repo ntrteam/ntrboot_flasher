@@ -14,9 +14,6 @@ extern uint8_t *top_screen, *bottom_screen;
 #define SCREEN_SIZE_TOP (BYTES_PER_PIXEL*SCREEN_WIDTH_TOP)
 #define SCREEN_SIZE_BOT (BYTES_PER_PIXEL*SCREEN_WIDTH_BOT)
 
-#define FONT_WIDTH 8
-#define FONT_HEIGHT 10
-
 #define RGB(r,g,b) (r<<24|b<<16|g<<8|r)
 
 #define COLOR_BLACK         RGB(0x00, 0x00, 0x00)
@@ -45,15 +42,18 @@ extern uint8_t *top_screen, *bottom_screen;
 #define STD_COLOR_FONT COLOR_WHITE
 
 void ClearScreen(uint8_t *screen, int color);
+void DrawRectangle(uint8_t* screen, int x, int y, int width, int height, int color);
+
 void DrawCharacter(uint8_t *screen, int character, int x, int y, int color, int bgcolor);
 void DrawHex(uint8_t *screen, unsigned int hex, int x, int y, int color, int bgcolor);
 void DrawString(uint8_t *screen, const char *str, int x, int y, int color, int bgcolor);
 void DrawStringF(uint8_t *screen, int x, int y, int color, int bgcolor, const char *format, ...);
 void DrawHexWithName(uint8_t *screen, const char *str, unsigned int hex, int x, int y, int color, int bgcolor);
-void ShowProgress(uint8_t *screen, uint32_t current, uint32_t total);
 
 uint32_t GetDrawStringHeight(const char* str);
 uint32_t GetDrawStringWidth(const char* str);
 
 void ShowString(uint8_t *screen, const char *format, ...);
 bool ShowPrompt(uint8_t *screen, bool ask, const char *format, ...);
+
+void ShowProgress(uint8_t* screen, uint32_t current, uint32_t total, const char* status);

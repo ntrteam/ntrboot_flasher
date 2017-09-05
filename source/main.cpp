@@ -137,7 +137,6 @@ void ntrboot_dump_flash() {
     if (mem == NULL)
         ShowPrompt(BOTTOM_SCREEN, false, "Failed to allocate memory"); 
 
-    ShowProgress(TOP_SCREEN, 0, 0);
     selected_flashcart->readFlash(0, length, mem);
 
     ShowPrompt(BOTTOM_SCREEN, false, "Read from flash successfully.");
@@ -154,7 +153,6 @@ void ntrboot_dump_flash() {
     fclose(f);
 
     free(mem);
-    ShowProgress(TOP_SCREEN, 0, 0);
 
     DrawStringF(TOP_SCREEN, 10, 150, COLOR_GREEN, STD_COLOR_BG, "Dump Complete!");  
     ELM_Unmount();
@@ -190,7 +188,6 @@ void ntrboot_restore_flash() {
         uint8_t* flash_memp = flash_mem;
 
         DrawStringF(TOP_SCREEN, 10, 40, STD_COLOR_FONT, STD_COLOR_BG, "Reading...");
-        ShowProgress(TOP_SCREEN, 0, 0);
         selected_flashcart->readFlash(0, length, flash_memp);
 
         int written_chunk = 0;
@@ -198,7 +195,6 @@ void ntrboot_restore_flash() {
         for(uint32_t j=0; j<length; j+=chunk_size)
         {
             DrawStringF(TOP_SCREEN, 10, 50, STD_COLOR_FONT, STD_COLOR_BG, "Checking %08X", j);        
-            ShowProgress(TOP_SCREEN, j, length);
             if(memcmp(flash_memp+j,memp+j,chunk_size) != 0)
             {
                 DrawStringF(TOP_SCREEN, 10, 60, STD_COLOR_FONT, STD_COLOR_BG, "Writing chunk %08X", j);
@@ -264,9 +260,7 @@ void ntrboot_inject() {
 
         DrawStringF(TOP_SCREEN, 10, 80, COLOR_GREEN, STD_COLOR_BG, "Injecting...");
 
-        ShowProgress(TOP_SCREEN, 0, 0);
         selected_flashcart->injectNtrBoot((uint8_t *)blowfish_retail_bin, firm, firm_size);
-        ShowProgress(TOP_SCREEN, 0, 0);
 
         DrawStringF(TOP_SCREEN, 10, 90, COLOR_GREEN, STD_COLOR_BG, "Injection Complete!");
     } else
