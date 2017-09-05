@@ -29,6 +29,10 @@ To compile this, you need:
 ## Planned support/Community involvement
 While we initially planned to support more carts on release, we have not been able to expand beyond the current set of supported carts due to a lack of time/energy/manpower. If you have a cart you would like supported and have the know-how for debugging/reverse engineering a flashcart, please come find one of the devs in [#Cakey on freenode](https://kiwiirc.com/client/irc.freenode.net/?nick=ntrbootuser_?#Cakey). Ideally, this toolset is extensible towards any updatable Nintendo DS/DSi flashcart. See [flashcart_core](https://github.com/kitling/flashcart_core) for more flashcart details. **Do not submit a "feature request" on this repository asking "When will <my cart\> be supported?" The answer to this question is "We don't know". See [here](https://github.com/kitling/flashcart_core#requesting-support-for-a-new-card) for details on requesting your cart."**
 
+## Licensing
+This software is licensed under the terms of the GPLv3.
+You can find a copy of the license in the LICENSE file.
+
 ## Credits
 [@Normmatt](https://github.com/Normmatt) for initial implementation, bug squashing, expertise... etc.  
 [@SciresM](https://twitter.com/SciresM) for sighax/boot9strap and flashcart RE.  
