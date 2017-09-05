@@ -17,15 +17,13 @@ bool menu_show_intro_warning()
 {
     ClearScreen(TOP_SCREEN, COLOR_RED);
     
-    DrawStringF(TOP_SCREEN, 10, 10, COLOR_BLACK, COLOR_RED, "ntrboot flasher [%s]", NTRBOOT_FLASHER_VERSION);
-    DrawStringF(TOP_SCREEN, 10, 20, COLOR_BLACK, COLOR_RED, "flashcart_core [%s]", FLASHCART_CORE_VERSION);
+    DrawStringF(TOP_SCREEN, 10, 10, COLOR_BLACK, COLOR_RED, "WARNING");
+    DrawStringF(TOP_SCREEN, 10, 20, COLOR_BLACK, COLOR_RED, "-------");
+    DrawStringF(TOP_SCREEN, 10, 40, COLOR_BLACK, COLOR_RED, "This software writes directly to\nyour flashcart to inject ntrboot.");
+    DrawStringF(TOP_SCREEN, 10, 60, COLOR_BLACK, COLOR_RED, "In rare cases this may brick your\nflashcart and leave it unusable.");
+    DrawStringF(TOP_SCREEN, 10, 90, COLOR_BLACK, COLOR_RED, "<A> Continue <B> Exit");
 
-    DrawStringF(TOP_SCREEN, 10, 40, COLOR_BLACK, COLOR_RED, "WARNING");
-    DrawStringF(TOP_SCREEN, 10, 50, COLOR_BLACK, COLOR_RED, "-------");
-    DrawStringF(TOP_SCREEN, 10, 70, COLOR_BLACK, COLOR_RED, "This software writes directly to\nyour flashcart to inject ntrboot.");
-    DrawStringF(TOP_SCREEN, 10, 90, COLOR_BLACK, COLOR_RED, "In rare cases this may brick your\nflashcart and leave it unusable.");
-    DrawStringF(TOP_SCREEN, 10, 130, COLOR_BLACK, COLOR_RED, "<A> Continue <B> Exit");
-
+    while (HID_STATE != 0); // bug fix: wait for the HID_STATE to reset
     return (WaitButton(BUTTON_A | BUTTON_B) & BUTTON_A) == BUTTON_A;
 }
 
