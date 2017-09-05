@@ -260,11 +260,11 @@ void ntrboot_inject() {
 
         DrawStringF(TOP_SCREEN, 10, 80, COLOR_GREEN, STD_COLOR_BG, "Injecting...");
 
-        selected_flashcart->injectNtrBoot((uint8_t *)blowfish_retail_bin, firm, firm_size);
+        selected_flashcart->injectNtrBoot((uint8_t *)blowfish_key, firm, firm_size);
 
         DrawStringF(TOP_SCREEN, 10, 90, COLOR_GREEN, STD_COLOR_BG, "Injection Complete!");
     } else
-        DrawStringF(TOP_SCREEN, 10, 80, COLOR_RED, STD_COLOR_BG, "/ntrboot/boot9strap_ntr.firm not found");        
+        DrawStringF(TOP_SCREEN, 10, 80, COLOR_RED, STD_COLOR_BG, "/ntrboot/boot9strap_ntr%s.firm not found", (button & BUTTON_Y ? "_dev" : ""));
 
     ELM_Unmount();
     
