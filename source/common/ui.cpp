@@ -18,25 +18,38 @@ void ClearScreen(uint8_t *screen, int color)
     }
 }
 
+void DrawRectangle(uint8_t* screen, int x, int y, int width, int height, int color)
+{
+    for (int yy = 0; yy < height; yy++) {
+        int xDisplacement = (x * BYTES_PER_PIXEL * SCREEN_HEIGHT);
+        int yDisplacement = ((SCREEN_HEIGHT - (y + yy) - 1) * BYTES_PER_PIXEL);
+        u8* screenPos = screen + xDisplacement + yDisplacement;
+        for (int xx = width - 1; xx >= 0; xx--) {
+            *(screenPos + 0) = color >> 16;  // B
+            *(screenPos + 1) = color >> 8;   // G
+            *(screenPos + 2) = color & 0xFF; // R
+            screenPos += BYTES_PER_PIXEL * SCREEN_HEIGHT;
+        }
+    }
+}
+
 void DrawCharacter(uint8_t *screen, int character, int x, int y, int color, int bgcolor)
 {
-    for (int yy = 0; yy < 8; yy++)
+    for (int yy = 0; yy < FONT_HEIGHT; yy++)
     {
         int xDisplacement = (x * BYTES_PER_PIXEL * SCREEN_HEIGHT);
         int yDisplacement = ((SCREEN_HEIGHT - (y + yy) - 1) * BYTES_PER_PIXEL);
         uint8_t *screenPos = screen + xDisplacement + yDisplacement;
 
-        uint8_t charPos = font[character * 8 + yy];
-        for (int xx = 7; xx >= 0; xx--)
+        uint8_t charPos = font[character * FONT_HEIGHT + yy];
+        for (int xx = 7; xx >= (8 - FONT_WIDTH); xx--)
         {
             if ((charPos >> xx) & 1)
             {
                 *(screenPos + 0) = color >> 16; //B
                 *(screenPos + 1) = color >> 8; //G
                 *(screenPos + 2) = color & 0xFF; //R
-            }
-            else
-            {
+            } else if (bgcolor != COLOR_TRANSPARENT) {
                 *(screenPos + 0) = bgcolor >> 16; //B
                 *(screenPos + 1) = bgcolor >> 8; //G
                 *(screenPos + 2) = bgcolor & 0xFF; //R
@@ -83,21 +96,7 @@ void DrawHex(uint8_t *screen, unsigned int hex, int x, int y, int color, int bgc
 void DrawHexWithName(uint8_t *screen, const char *str, unsigned int hex, int x, int y, int color, int bgcolor)
 {
     DrawString(screen, str, x, y, color, bgcolor);
-    DrawHex(screen, hex,x + strlen(str) * 8, y, color, bgcolor);
-}
-
-void ShowProgress(uint8_t *screen, uint32_t current, uint32_t total)
-{
-    const uint32_t progX = SCREEN_WIDTH - 40;
-    const uint32_t progY = SCREEN_HEIGHT - 20;
-    
-    if (total > 0) {
-        char progStr[8];
-        snprintf(progStr, 8, "%3lu%%", (current * 100) / total);
-        DrawString(screen, progStr, progX, progY, STD_COLOR_FONT, STD_COLOR_BG);
-    } else {
-        DrawString(screen, "    ", progX, progY, STD_COLOR_FONT, STD_COLOR_BG);
-    }
+    DrawHex(screen, hex,x + strlen(str) * FONT_WIDTH, y, color, bgcolor);
 }
 
 uint32_t GetDrawStringHeight(const char* str) {
@@ -170,4 +169,37 @@ bool ShowPrompt(uint8_t *screen, bool ask, const char *format, ...)
     ClearScreen(screen, STD_COLOR_BG);
     
     return ret;
+}
+
+void ShowProgress(uint8_t *screen, uint32_t current, uint32_t total, const char* status)
+{
+    const uint8_t bar_width = 240;
+    const uint8_t bar_height = 12;
+    const uint16_t bar_pos_x = (SCREEN_WIDTH - bar_width) / 2;
+    const uint16_t bar_pos_y = (SCREEN_HEIGHT / 2) - (bar_height / 2);
+    const uint16_t text_pos_x = bar_pos_x + (bar_width/2) - (FONT_WIDTH*2);
+    const uint16_t text_pos_y = bar_pos_y + 1;
+
+    static uint32_t last_prog_width = 0;    
+    uint32_t prog_width = ((total > 0) && (current <= total)) ? (current * (bar_width-4)) / total : 0;
+    uint32_t prog_percent = ((total > 0) && (current <= total)) ? (current * 100) / total : 0;
+
+    DrawString(screen, status, bar_pos_x, bar_pos_y - FONT_HEIGHT - 4, STD_COLOR_FONT, STD_COLOR_BG);
+
+    // draw the initial outline
+    if (current == 0 || last_prog_width > prog_width)
+    {
+        ClearScreen(screen, STD_COLOR_BG);
+        DrawRectangle(screen, bar_pos_x, bar_pos_y, bar_width, bar_height, STD_COLOR_FONT);
+        DrawRectangle(screen, bar_pos_x + 1, bar_pos_y + 1, bar_width - 2, bar_height - 2, STD_COLOR_BG);
+    }
+
+    // only draw the rectangle if it's changed.
+    if (current == 0 || last_prog_width != prog_width)
+    {
+        DrawRectangle(screen, bar_pos_x + 2, bar_pos_y + 2, prog_width, bar_height - 4, COLOR_GREEN);
+        DrawStringF(screen, text_pos_x, text_pos_y, STD_COLOR_FONT, COLOR_TRANSPARENT, "%3lu%%", prog_percent);
+    }
+
+    last_prog_width = prog_width;
 }
