@@ -10,6 +10,6 @@ void Flashcart::sendCommand(const uint8_t *cmdbuf, uint16_t response_len, uint8_
     NTR_SendCommand(cmdbuf, response_len, flags, resp);
 }
 
-void Flashcart::showProgress(uint32_t current, uint32_t total) {
-    ShowProgress(TOP_SCREEN, current, total);
+void Flashcart::showProgress(uint32_t current, uint32_t total, char* status_string) {
+    ShowProgress(BOTTOM_SCREEN, current, total, status_string);
 }
