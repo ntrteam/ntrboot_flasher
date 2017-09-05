@@ -42,9 +42,14 @@ int8_t menu_select_flashcart()
 
     int deviceOption = 0;    
     while(true)
-    {       
-        DrawStringF(TOP_SCREEN, 0, 0, COLOR_WHITE, COLOR_BLUE, "              Select your flashcart:              ");
-        DrawStringF(TOP_SCREEN, 0, SCREEN_HEIGHT-FONT_HEIGHT, COLOR_WHITE, COLOR_RED,  "                Press <B> to Exit.                ");        
+    {
+        DrawRectangle(TOP_SCREEN, 0, 0, SCREEN_WIDTH_TOP, 12, COLOR_BLUE);
+
+        DrawStringF(TOP_SCREEN, 10,  1, COLOR_WHITE, COLOR_BLUE, "Select your flashcart:");
+        DrawStringF(TOP_SCREEN, 270, 1, COLOR_WHITE, COLOR_BLUE, "<A> Select  <B> Exit");
+
+        DrawStringF(TOP_SCREEN, 10, SCREEN_HEIGHT-23, COLOR_BLACK, COLOR_LIGHTGREY, "ntrboot_flasher: %s", NTRBOOT_FLASHER_VERSION);
+        DrawStringF(TOP_SCREEN, 10, SCREEN_HEIGHT-11, COLOR_BLACK, COLOR_LIGHTGREY, "flashcart_core:  %s", FLASHCART_CORE_VERSION);
 
         // todo: scroll through this, we can only have 23 on the screen at once
         int i = 0;
@@ -55,13 +60,13 @@ int8_t menu_select_flashcart()
             {
                 ClearScreen(BOTTOM_SCREEN, STD_COLOR_BG);
 
-                DrawStringF(BOTTOM_SCREEN, 0, 0, COLOR_WHITE, COLOR_BLUE, "           Selected Cart Info           ");
+                DrawRectangle(BOTTOM_SCREEN, 0, 0, SCREEN_WIDTH_TOP, 12, COLOR_BLUE);
+                DrawStringF(BOTTOM_SCREEN, 106, 0, COLOR_WHITE, COLOR_BLUE, "Selected Cart Info");
+
                 DrawStringF(BOTTOM_SCREEN, 10, 20, STD_COLOR_FONT, STD_COLOR_BG, "Name: %s", (*it)->getName());
                 DrawStringF(BOTTOM_SCREEN, 10, 30, STD_COLOR_FONT, STD_COLOR_BG, "Author: %s", (*it)->getAuthor());
 
-                DrawStringF(BOTTOM_SCREEN, 10, 50, STD_COLOR_FONT, STD_COLOR_BG, "Description:");
-                DrawStringF(BOTTOM_SCREEN, 10, 70, STD_COLOR_FONT, STD_COLOR_BG, (*it)->getDescription());                
-                
+                DrawStringF(BOTTOM_SCREEN, 10, 50, STD_COLOR_FONT, STD_COLOR_BG, (*it)->getDescription());
             }
         }
 
