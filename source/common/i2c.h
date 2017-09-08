@@ -16,3 +16,6 @@
 #define I2C_DEV_IR   13
 
 bool i2cWriteRegister(uint8_t dev_id, uint8_t reg, uint8_t data);
+
+void i2cPoweroff() __attribute__((noreturn));
+void i2cReboot() __attribute__((noreturn));

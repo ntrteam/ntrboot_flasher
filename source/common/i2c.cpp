@@ -112,3 +112,15 @@ bool i2cWriteRegister(uint8_t dev_id, uint8_t reg, uint8_t data)
 
     return ret;
 }
+
+void i2cPoweroff() {
+    i2cWriteRegister(I2C_DEV_MCU, 0x22, 1); // poweroff LCD to prevent MCU hangs
+    while(!i2cWriteRegister(I2C_DEV_MCU, 0x20, 1 << 0));
+    while(true);
+}
+
+void i2cReboot() {
+    i2cWriteRegister(I2C_DEV_MCU, 0x22, 1);
+    while(!i2cWriteRegister(I2C_DEV_MCU, 0x20, 1 << 2));
+    while(true);
+}

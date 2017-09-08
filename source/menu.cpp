@@ -5,6 +5,7 @@
 #include "hid.h"
 #include "protocol.h"
 #include "ui.h"
+#include "i2c.h"
 
 void menu_wait_cart_insert()
 {
@@ -16,7 +17,7 @@ void menu_wait_cart_insert()
 bool menu_show_intro_warning()
 {
     ClearScreen(TOP_SCREEN, COLOR_RED);
-    
+
     DrawStringF(TOP_SCREEN, 10, 10, COLOR_WHITE, COLOR_RED, "WARNING: READ THIS BEFORE CONTINUING");
     DrawStringF(TOP_SCREEN, 10, 20, COLOR_WHITE, COLOR_RED, "------------------------------------");
 
@@ -28,25 +29,27 @@ bool menu_show_intro_warning()
 
     DrawStringF(TOP_SCREEN, 10, 100, COLOR_WHITE, COLOR_RED, "ALWAYS KEEP A BACKUP");
 
-    DrawStringF(TOP_SCREEN, 10, 120, COLOR_WHITE, COLOR_RED, "<A> Continue <B> Exit");
+    DrawStringF(TOP_SCREEN, 10, 120, COLOR_WHITE, COLOR_RED, "<A> Continue  <B> Poweroff  <START> Reboot");
 
     while (HID_STATE != 0); // bug fix: wait for the HID_STATE to reset
-    bool retval = (WaitButton(BUTTON_A | BUTTON_B) & BUTTON_A) == BUTTON_A;
+    uint32_t state = WaitButton(BUTTON_A | BUTTON_B | BUTTON_START);
     ClearScreen(TOP_SCREEN, COLOR_BLACK);
-    return retval;
+
+    if (state & BUTTON_START) i2cReboot();
+    return (state & BUTTON_A) == BUTTON_A;
 }
 
 int8_t menu_select_flashcart()
 {
     ClearScreen(TOP_SCREEN, STD_COLOR_BG);
 
-    int deviceOption = 0;    
+    int deviceOption = 0;
     while(true)
     {
         DrawRectangle(TOP_SCREEN, 0, 0, SCREEN_WIDTH_TOP, 12, COLOR_BLUE);
 
         DrawStringF(TOP_SCREEN, 10,  1, COLOR_WHITE, COLOR_BLUE, "Select your flashcart:");
-        DrawStringF(TOP_SCREEN, 270, 1, COLOR_WHITE, COLOR_BLUE, "<A> Select  <B> Exit");
+        DrawStringF(TOP_SCREEN, 270, 1, COLOR_WHITE, COLOR_BLUE, "<A> Select  <B> Poweroff  <START> Reboot");
 
         DrawStringF(TOP_SCREEN, 10, SCREEN_HEIGHT-23, COLOR_BLACK, COLOR_LIGHTGREY, "ntrboot_flasher: %s", NTRBOOT_FLASHER_VERSION);
         DrawStringF(TOP_SCREEN, 10, SCREEN_HEIGHT-11, COLOR_BLACK, COLOR_LIGHTGREY, "flashcart_core:  %s", FLASHCART_CORE_VERSION);
@@ -78,28 +81,31 @@ int8_t menu_select_flashcart()
         else if(deviceOption >= flashcart_list->size()) deviceOption = flashcart_list->size() - 1;
 
         if (keys & BUTTON_A) return deviceOption;
-        if (keys & BUTTON_B) return -1;        
+        if (keys & BUTTON_B) return -1;
+        if (keys & BUTTON_START) i2cReboot();
     }
 
     return -1;
 }
 
+#define MENU_HIGHLIGHT(yn) (yn ? COLOR_RED : STD_COLOR_FONT)
 
 uint8_t menu_flashcart_menu(const char* flashcart_name)
 {
-    ClearScreen(TOP_SCREEN, STD_COLOR_BG);    
+    ClearScreen(TOP_SCREEN, STD_COLOR_BG);
 
     DrawStringF(TOP_SCREEN, 10, 10, STD_COLOR_FONT, STD_COLOR_BG, "Flashcart: %s", flashcart_name);
 
-    int menuOption = 0;    
+    int menuOption = 0;
     while(true)
-    {        
-        DrawStringF(TOP_SCREEN, 10, 30, (menuOption == MENU_DUMP   )          ? COLOR_RED : STD_COLOR_FONT, STD_COLOR_BG, "Dump Flash");
-        DrawStringF(TOP_SCREEN, 10, 40, (menuOption == MENU_RESTORE)          ? COLOR_RED : STD_COLOR_FONT, STD_COLOR_BG, "Restore Flash");
-        DrawStringF(TOP_SCREEN, 10, 50, (menuOption == MENU_INJECT )          ? COLOR_RED : STD_COLOR_FONT, STD_COLOR_BG, "Inject Ntrboot");
-        DrawStringF(TOP_SCREEN, 10, 70, (menuOption == MENU_SELECT_FLASHCART) ? COLOR_RED : STD_COLOR_FONT, STD_COLOR_BG, "Reselect Flashcart");
-        DrawStringF(TOP_SCREEN, 10, 90, (menuOption == MENU_EXIT)             ? COLOR_RED : STD_COLOR_FONT, STD_COLOR_BG, "Exit");
-        
+    {
+        DrawStringF(TOP_SCREEN, 10, 30, MENU_HIGHLIGHT(menuOption == MENU_DUMP)             , STD_COLOR_BG, "Dump Flash");
+        DrawStringF(TOP_SCREEN, 10, 40, MENU_HIGHLIGHT(menuOption == MENU_RESTORE)          , STD_COLOR_BG, "Restore Flash");
+        DrawStringF(TOP_SCREEN, 10, 50, MENU_HIGHLIGHT(menuOption == MENU_INJECT)           , STD_COLOR_BG, "Inject Ntrboot");
+        DrawStringF(TOP_SCREEN, 10, 70, MENU_HIGHLIGHT(menuOption == MENU_SELECT_FLASHCART) , STD_COLOR_BG, "Reselect Flashcart");
+        DrawStringF(TOP_SCREEN, 10, 90, MENU_HIGHLIGHT(menuOption == MENU_EXIT)             , STD_COLOR_BG, "Poweroff");
+        DrawStringF(TOP_SCREEN, 10, 100, MENU_HIGHLIGHT(menuOption == MENU_REBOOT)           , STD_COLOR_BG, "Reboot");
+
         uint32_t keys = WaitButton(BUTTON_ANY);
         if (keys & BUTTON_UP) menuOption--;
         if (keys & BUTTON_DOWN) menuOption++;
@@ -109,6 +115,7 @@ uint8_t menu_flashcart_menu(const char* flashcart_name)
 
         if (keys & BUTTON_A) return menuOption;
         if (keys & BUTTON_B) return MENU_EXIT;
+        if (keys & BUTTON_START) return MENU_REBOOT;
     }
 
     return -1;

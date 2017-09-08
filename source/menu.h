@@ -9,6 +9,7 @@ enum
     MENU_INJECT,
     MENU_SELECT_FLASHCART,
     MENU_EXIT,
+    MENU_REBOOT,
     MENU_MAX
 };
 
