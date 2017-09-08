@@ -88,7 +88,7 @@ void DrawHex(uint8_t *screen, unsigned int hex, int x, int y, int color, int bgc
         int nibble = (hex >> ((7-i)*4))&0xF;
         if(nibble > 9) character = 'A' + nibble-10;
         else character = '0' + nibble;
-        
+
         DrawCharacter(screen, character, x+(i*8), y, color, bgcolor);
     }
 }
@@ -124,18 +124,18 @@ void ShowString(uint8_t *screen, const char *format, ...)
 {
     uint32_t str_width, str_height;
     uint32_t x, y;
-    
+
     char str[256] = { 0 };
     va_list va;
     va_start(va, format);
     vsnprintf(str, 256, format, va);
     va_end(va);
-    
+
     str_width = GetDrawStringWidth(str);
     str_height = GetDrawStringHeight(str);
     x = (str_width >= SCREEN_WIDTH) ? 0 : (SCREEN_WIDTH - str_width) / 2;
     y = (str_height >= SCREEN_HEIGHT) ? 0 : (SCREEN_HEIGHT - str_height) / 2;
-    
+
     ClearScreen(screen, STD_COLOR_BG);
     DrawStringF(screen, x, y, STD_COLOR_FONT, STD_COLOR_BG, str);
 }
@@ -145,29 +145,29 @@ bool ShowPrompt(uint8_t *screen, bool ask, const char *format, ...)
     uint32_t str_width, str_height;
     uint32_t x, y;
     bool ret = true;
-    
+
     char str[256] = { 0 };
     va_list va;
     va_start(va, format);
     vsnprintf(str, 256, format, va);
     va_end(va);
-    
+
     str_width = GetDrawStringWidth(str);
     str_height = GetDrawStringHeight(str) + (2 * 10);
     if (str_width < 18 * FONT_WIDTH) str_width = 18 * FONT_WIDTH;
     x = (str_width >= SCREEN_WIDTH) ? 0 : (SCREEN_WIDTH - str_width) / 2;
     y = (str_height >= SCREEN_HEIGHT) ? 0 : (SCREEN_HEIGHT - str_height) / 2;
-    
+
     ClearScreen(screen, STD_COLOR_BG);
     DrawStringF(screen, x, y, STD_COLOR_FONT, STD_COLOR_BG, str);
     DrawStringF(screen, x, y + str_height - (1*10), STD_COLOR_FONT, STD_COLOR_BG, (ask) ? "(<A> yes, <B> no)" : "(<A> to continue)");
-    
+
     uint32_t keys = WaitButton(BUTTON_A | BUTTON_B);
     if (keys & BUTTON_A) ret = true;
     if (keys & BUTTON_B) ret = false;
 
     ClearScreen(screen, STD_COLOR_BG);
-    
+
     return ret;
 }
 
@@ -180,7 +180,7 @@ void ShowProgress(uint8_t *screen, uint32_t current, uint32_t total, const char*
     const uint16_t text_pos_x = bar_pos_x + (bar_width/2) - (FONT_WIDTH*2);
     const uint16_t text_pos_y = bar_pos_y + 1;
 
-    static uint32_t last_prog_width = 0;    
+    static uint32_t last_prog_width = 0;
     uint32_t prog_width = ((total > 0) && (current <= total)) ? (current * (bar_width-4)) / total : 0;
     uint32_t prog_percent = ((total > 0) && (current <= total)) ? (current * 100) / total : 0;
 
@@ -197,6 +197,7 @@ void ShowProgress(uint8_t *screen, uint32_t current, uint32_t total, const char*
     // only draw the rectangle if it's changed.
     if (current == 0 || last_prog_width != prog_width)
     {
+        DrawRectangle(screen, bar_pos_x + 1, bar_pos_y + 1, bar_width - 2, bar_height - 2, STD_COLOR_BG); // Clear the progress bar before re-rendering.
         DrawRectangle(screen, bar_pos_x + 2, bar_pos_y + 2, prog_width, bar_height - 4, COLOR_GREEN);
         DrawStringF(screen, text_pos_x, text_pos_y, STD_COLOR_FONT, COLOR_TRANSPARENT, "%3lu%%", prog_percent);
     }
