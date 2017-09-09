@@ -59,10 +59,10 @@
 #define NTRCARD_CMD_DATA_READ      0xB7
 #define NTRCARD_CMD_DATA_CHIPID    0xB8
 
-#define NTRCARD_CR1_ENABLE  0x8000
-#define NTRCARD_CR1_IRQ     0x4000
+#define NTRCARD_CR1_ENABLE  0x80
+#define NTRCARD_CR1_IRQ     0x40
 
-#define NTRKEY_PARAM 0x3F1FFF
+#define NTRKEY_PARAM 0
 
 void NTR_SendCommand(const u8 command[8], u32 pageSize, u32 latency, void* buffer);
 void NTR_CmdReset(void);

@@ -104,7 +104,7 @@ void NTR_SendCommand(const u8 command[8], u32 pageSize, u32 latency, void* buffe
         // and this tiny delay is necessary
         //ioAK2Delay(33);
         // pull ROM CS high
-        REG_NTRCARDROMCNT = 0x10000000;
+
         REG_NTRCARDROMCNT = NTRKEY_PARAM | NTRCARD_ACTIVATE | NTRCARD_nRESET;
     }
     // wait rom cs high
