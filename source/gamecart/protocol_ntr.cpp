@@ -35,8 +35,15 @@ void NTR_SendCommand(const u8 command[8], u32 pageSize, u32 latency, void* buffe
             transferLength = 8192;
             pageParam = NTRCARD_PAGESIZE_8K;
             break;
+        case 16384:
+            transferLength = 16384;
+            pageParam = NTRCARD_PAGESIZE_16K;
+            break;
+        default:
+            break; // 4K pagesize default
     }
 
+    REG_NTRCARDROMCNT = 0x10000000;
     REG_NTRCARDROMCNT = NTRKEY_PARAM | NTRCARD_ACTIVATE | NTRCARD_nRESET | pageParam | latency;
 
     u8 * pbuf = (u8 *)buffer;
