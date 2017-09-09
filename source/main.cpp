@@ -71,13 +71,13 @@ void ntrboot_flasher()
 
     menu_wait_cart_insert();
 
-    init_cart: Cart_Init();
-    uint32_t chip_id = Cart_GetID();
-    uint8_t *header = (uint8_t*)malloc(0x1000);
-    NTR_CmdReadHeader(header);
-
     reselect_cart: while(selected_flashcart == 0)
     {
+        Cart_Init();
+        uint32_t chip_id = Cart_GetID();
+        uint8_t *header = (uint8_t*)malloc(0x1000);
+        NTR_CmdReadHeader(header);
+
         int8_t flashcart_index = menu_select_flashcart();
         if (flashcart_index == -1)
             return;
@@ -87,11 +87,9 @@ void ntrboot_flasher()
             break;
         selected_flashcart->shutdown();
 
-        selected_flashcart = 0;
-        ShowPrompt(BOTTOM_SCREEN, false, "Flashcart setup failed");
+        ShowPrompt(BOTTOM_SCREEN, false, "Your flashcart is not supported by %s", selected_flashcart->getName());
 
-        Cart_Reset();
-        goto init_cart; // ¯\_(ツ)_/¯
+        selected_flashcart = 0;
     }
 
     while(true)
