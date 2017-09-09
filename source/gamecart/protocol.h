@@ -20,6 +20,7 @@
 #define LATENCY 0x822C
 
 void Cart_Init(void);
+void Cart_Reset(void);
 uint32_t Cart_GetID(void);
 void SwitchToNTRCARD(void);
 void ResetCartSlot(void);

@@ -71,7 +71,7 @@ void ntrboot_flasher()
 
     menu_wait_cart_insert();
 
-    Cart_Init();
+    init_cart: Cart_Init();
     uint32_t chip_id = Cart_GetID();
     uint8_t *header = (uint8_t*)malloc(0x1000);
     NTR_CmdReadHeader(header);
@@ -90,7 +90,8 @@ void ntrboot_flasher()
         selected_flashcart = 0;
         ShowPrompt(BOTTOM_SCREEN, false, "Flashcart setup failed");
 
-        // todo: reset the cart and init it again
+        Cart_Reset();
+        goto init_cart; // ¯\_(ツ)_/¯
     }
 
     while(true)
