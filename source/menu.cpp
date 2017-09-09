@@ -31,7 +31,7 @@ bool menu_show_intro_warning()
 
     DrawStringF(TOP_SCREEN, 10, 120, COLOR_WHITE, COLOR_RED, "<A> Continue  <B> Poweroff  <START> Reboot");
 
-    while (HID_STATE != 0); // bug fix: wait for the HID_STATE to reset
+    while (HID_STATE != 0); // bug fix: wait for the HID_STATE to reset (luma seems to pass through with A button already down)
     uint32_t state = WaitButton(BUTTON_A | BUTTON_B | BUTTON_START);
     ClearScreen(TOP_SCREEN, COLOR_BLACK);
 
@@ -49,7 +49,7 @@ int8_t menu_select_flashcart()
         DrawRectangle(TOP_SCREEN, 0, 0, SCREEN_WIDTH_TOP, 12, COLOR_BLUE);
 
         DrawStringF(TOP_SCREEN, 10,  1, COLOR_WHITE, COLOR_BLUE, "Select your flashcart:");
-        DrawStringF(TOP_SCREEN, 270, 1, COLOR_WHITE, COLOR_BLUE, "<A> Select  <B> Poweroff  <START> Reboot");
+        DrawStringF(TOP_SCREEN, SCREEN_WIDTH_TOP - 250, 1, COLOR_WHITE, COLOR_BLUE, "<A> Select  <B> Poweroff  <START> Reboot");
 
         DrawStringF(TOP_SCREEN, 10, SCREEN_HEIGHT-23, COLOR_BLACK, COLOR_LIGHTGREY, "ntrboot_flasher: %s", NTRBOOT_FLASHER_VERSION);
         DrawStringF(TOP_SCREEN, 10, SCREEN_HEIGHT-11, COLOR_BLACK, COLOR_LIGHTGREY, "flashcart_core:  %s", FLASHCART_CORE_VERSION);
