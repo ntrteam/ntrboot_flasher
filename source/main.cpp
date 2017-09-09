@@ -81,15 +81,14 @@ void ntrboot_flasher()
         int8_t flashcart_index = menu_select_flashcart();
         if (flashcart_index == -1)
             return;
-
         selected_flashcart = flashcart_list->at(flashcart_index);
+
         if (selected_flashcart->initialize())
             break;
         selected_flashcart->shutdown();
+        selected_flashcart = 0;        
 
-        ShowPrompt(BOTTOM_SCREEN, false, "Your flashcart is not supported by %s", selected_flashcart->getName());
-
-        selected_flashcart = 0;
+        ShowPrompt(BOTTOM_SCREEN, false, "Your flashcart is not supported.");
     }
 
     while(true)
