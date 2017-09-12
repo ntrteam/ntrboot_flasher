@@ -69,6 +69,8 @@ void ntrboot_flasher()
     if (!menu_show_intro_warning())
         return;
 
+    ELM_Mount();
+
     menu_wait_cart_insert();
 
     reselect_cart: while(selected_flashcart == 0)
@@ -86,7 +88,7 @@ void ntrboot_flasher()
         if (selected_flashcart->initialize())
             break;
         selected_flashcart->shutdown();
-        selected_flashcart = 0;        
+        selected_flashcart = 0;
 
         ShowPrompt(BOTTOM_SCREEN, false, "Your flashcart is not supported.");
     }
@@ -111,9 +113,12 @@ void ntrboot_flasher()
                 goto reselect_cart; // keeps code complexity down ¯\_(ツ)_/¯
                 break;
             case MENU_EXIT:
+                ELM_Unmount();
                 return;
             case MENU_REBOOT:
+                ELM_Unmount();
                 i2cReboot();
+                return;
         }
     }
 }
@@ -121,8 +126,6 @@ void ntrboot_flasher()
 void ntrboot_dump_flash() {
     ClearScreen(TOP_SCREEN, STD_COLOR_BG);
     DrawStringF(TOP_SCREEN, 10, 20, STD_COLOR_FONT, STD_COLOR_BG, "Dumping flash");
-
-    ELM_Mount();
 
     uint32_t length = selected_flashcart->getMaxLength();
 
@@ -148,8 +151,6 @@ void ntrboot_dump_flash() {
     free(mem);
 
     DrawStringF(TOP_SCREEN, 10, 150, COLOR_GREEN, STD_COLOR_BG, "Dump Complete!");
-    ELM_Unmount();
-
     DrawStringF(TOP_SCREEN, 10, 160, STD_COLOR_FONT, STD_COLOR_BG, "Press <A> to return to the main menu.");
 
     WaitButton(BUTTON_A);
@@ -158,8 +159,6 @@ void ntrboot_dump_flash() {
 void ntrboot_restore_flash() {
     ClearScreen(TOP_SCREEN, STD_COLOR_BG);
     DrawStringF(TOP_SCREEN, 10, 20, STD_COLOR_FONT, STD_COLOR_BG, "Restoring flash");
-
-    ELM_Mount();
 
     FILE *f = fopen("fat1:/ntrboot/backup.bin","rb");
 
@@ -206,8 +205,6 @@ void ntrboot_restore_flash() {
     else
         DrawStringF(TOP_SCREEN, 10, 40, COLOR_RED, STD_COLOR_BG, "Restore file was not found.");
 
-    ELM_Unmount();
-
     DrawStringF(TOP_SCREEN, 10, 160, STD_COLOR_FONT, STD_COLOR_BG, "Press <A> to return to the main menu.");
     WaitButton(BUTTON_A);
 }
@@ -219,8 +216,6 @@ void ntrboot_inject() {
     DrawStringF(TOP_SCREEN, 10, 40, STD_COLOR_FONT, STD_COLOR_BG, "Press <A> for retail unit ntrboot");
     DrawStringF(TOP_SCREEN, 10, 50, STD_COLOR_FONT, STD_COLOR_BG, "Press <Y> for developer unit ntrboot");
     DrawStringF(TOP_SCREEN, 10, 60, STD_COLOR_FONT, STD_COLOR_BG, "Press <B> to return to the main menu.");
-
-    ELM_Mount();
 
     FILE *f = NULL;
     uint8_t *blowfish_key = NULL;
@@ -236,11 +231,7 @@ void ntrboot_inject() {
         f = fopen("fat1:/ntrboot/boot9strap_ntr_dev.firm","rb");
         blowfish_key = (uint8_t *)blowfish_dev_bin;
     }
-    else if (button & BUTTON_B)
-    {
-        ELM_Unmount();
-        return;
-    }
+    else if (button & BUTTON_B) return;
 
     if (f != NULL)
     {
@@ -258,8 +249,6 @@ void ntrboot_inject() {
         DrawStringF(TOP_SCREEN, 10, 90, COLOR_GREEN, STD_COLOR_BG, "Injection Complete!");
     } else
         DrawStringF(TOP_SCREEN, 10, 80, COLOR_RED, STD_COLOR_BG, "/ntrboot/boot9strap_ntr%s.firm not found", (button & BUTTON_Y ? "_dev" : ""));
-
-    ELM_Unmount();
 
     DrawStringF(TOP_SCREEN, 10, 100, STD_COLOR_FONT, STD_COLOR_BG, "Press <A> to return to the main menu.");
     WaitButton(BUTTON_A);

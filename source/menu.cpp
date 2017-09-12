@@ -6,6 +6,7 @@
 #include "protocol.h"
 #include "ui.h"
 #include "i2c.h"
+#include "elm.h"
 
 void menu_wait_cart_insert()
 {
@@ -39,6 +40,17 @@ bool menu_show_intro_warning()
     return (state & BUTTON_A) == BUTTON_A;
 }
 
+void menu_unmount() {
+    ELM_Unmount();
+    ClearScreen(TOP_SCREEN, STD_COLOR_BG);
+    DrawStringF(TOP_SCREEN, 10, 10, STD_COLOR_FONT, STD_COLOR_BG, "It is now safe to remove your SD card.");
+
+    DrawStringF(TOP_SCREEN, 10, 30, STD_COLOR_FONT, STD_COLOR_BG, "Press <A> to continue after inserting your SD card again.");
+
+    WaitButton(BUTTON_A);
+    ELM_Mount();
+}
+
 int8_t menu_select_flashcart()
 {
     ClearScreen(TOP_SCREEN, STD_COLOR_BG);
@@ -49,7 +61,7 @@ int8_t menu_select_flashcart()
         DrawRectangle(TOP_SCREEN, 0, 0, SCREEN_WIDTH_TOP, 12, COLOR_BLUE);
 
         DrawStringF(TOP_SCREEN, 10,  1, COLOR_WHITE, COLOR_BLUE, "Select your flashcart:");
-        DrawStringF(TOP_SCREEN, SCREEN_WIDTH_TOP - 250, 1, COLOR_WHITE, COLOR_BLUE, "<A> Select  <B> Poweroff  <START> Reboot");
+        DrawStringF(TOP_SCREEN, SCREEN_WIDTH_TOP - 250, 1, COLOR_WHITE, COLOR_BLUE, "<A> Select  <B> Poweroff  <START> Reboot  <SELECT> Unmount SD");
 
         DrawStringF(TOP_SCREEN, 10, SCREEN_HEIGHT-23, COLOR_BLACK, COLOR_LIGHTGREY, "ntrboot_flasher: %s", NTRBOOT_FLASHER_VERSION);
         DrawStringF(TOP_SCREEN, 10, SCREEN_HEIGHT-11, COLOR_BLACK, COLOR_LIGHTGREY, "flashcart_core:  %s", FLASHCART_CORE_VERSION);
@@ -82,7 +94,11 @@ int8_t menu_select_flashcart()
 
         if (keys & BUTTON_A) return deviceOption;
         if (keys & BUTTON_B) return -1;
-        if (keys & BUTTON_START) i2cReboot();
+        if (keys & BUTTON_START) {
+            ELM_Unmount();
+            i2cReboot();
+        }
+        if (keys & BUTTON_SELECT) menu_unmount();
     }
 
     return -1;
