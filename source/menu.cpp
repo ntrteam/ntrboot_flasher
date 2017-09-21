@@ -49,6 +49,7 @@ void menu_unmount() {
 
     WaitButton(BUTTON_A);
     ELM_Mount();
+    ClearScreen(TOP_SCREEN, STD_COLOR_BG);
 }
 
 int8_t menu_select_flashcart()
