@@ -17,3 +17,6 @@ bool menu_show_intro_warning();
 void menu_wait_cart_insert();
 int8_t menu_select_flashcart();
 uint8_t menu_flashcart_menu(const char* flashcart_name);
+
+// From platform.cpp
+void close_logfile(void);

@@ -41,6 +41,7 @@ bool menu_show_intro_warning()
 }
 
 void menu_unmount() {
+    close_logfile();
     ELM_Unmount();
     ClearScreen(TOP_SCREEN, STD_COLOR_BG);
     DrawStringF(TOP_SCREEN, 10, 10, STD_COLOR_FONT, STD_COLOR_BG, "It is now safe to remove your SD card.");

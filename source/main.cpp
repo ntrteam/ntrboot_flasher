@@ -113,9 +113,11 @@ void ntrboot_flasher()
                 goto reselect_cart; // keeps code complexity down ¯\_(ツ)_/¯
                 break;
             case MENU_EXIT:
+                close_logfile();
                 ELM_Unmount();
                 return;
             case MENU_REBOOT:
+                close_logfile();
                 ELM_Unmount();
                 i2cReboot();
                 return;
