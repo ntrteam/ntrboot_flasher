@@ -81,8 +81,11 @@ void ntrboot_flasher()
         NTR_CmdReadHeader(header);
 
         int8_t flashcart_index = menu_select_flashcart();
-        if (flashcart_index == -1)
+        if (flashcart_index == -1) {
+            close_logfile();
+            ELM_Unmount();
             return;
+        }
         selected_flashcart = flashcart_list->at(flashcart_index);
 
         if (selected_flashcart->initialize())
