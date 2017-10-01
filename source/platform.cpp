@@ -58,6 +58,7 @@ int Flashcart::logMessage(log_priority priority, const char *fmt, ...) {
     }
 
     int result = vfprintf(logfile, log_fmt, args);
+    fflush(logfile); // Make sure we get logs written to the SD card.
     va_end(args);
 
     free(log_fmt);
