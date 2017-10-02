@@ -57,7 +57,7 @@ int8_t menu_select_flashcart()
 {
     ClearScreen(TOP_SCREEN, STD_COLOR_BG);
 
-    int deviceOption = 0;
+    size_t deviceOption = 0;
     while(true)
     {
         DrawRectangle(TOP_SCREEN, 0, 0, SCREEN_WIDTH_TOP, 12, COLOR_BLUE);
@@ -69,7 +69,7 @@ int8_t menu_select_flashcart()
         DrawStringF(TOP_SCREEN, 10, SCREEN_HEIGHT-11, COLOR_BLACK, COLOR_LIGHTGREY, "flashcart_core:  %s", FLASHCART_CORE_VERSION);
 
         // todo: scroll through this, we can only have 23 on the screen at once
-        int i = 0;
+        size_t i = 0;
         for (std::vector<Flashcart*>::iterator it = flashcart_list->begin() ; it != flashcart_list->end(); ++it, i++) {
             DrawStringF(TOP_SCREEN, 10, 20 + i*10, (i == deviceOption) ? COLOR_RED : STD_COLOR_FONT, STD_COLOR_BG, (*it)->getName());
 
@@ -88,11 +88,10 @@ int8_t menu_select_flashcart()
         }
 
         uint32_t keys = WaitButton(BUTTON_ANY);
-        if (keys & BUTTON_UP) deviceOption--;
+        if (deviceOption >= 1 && (keys & BUTTON_UP)) deviceOption--;
         if (keys & BUTTON_DOWN) deviceOption++;
 
-        if(deviceOption < 0) deviceOption = 0;
-        else if(deviceOption >= flashcart_list->size()) deviceOption = flashcart_list->size() - 1;
+        if(deviceOption >= flashcart_list->size()) deviceOption = flashcart_list->size() - 1;
 
         if (keys & BUTTON_A) return deviceOption;
         if (keys & BUTTON_B) return -1;

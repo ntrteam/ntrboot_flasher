@@ -32,10 +32,10 @@ LIBELM := $(CURDIR)/libelm3ds
 #---------------------------------------------------------------------------------
 ARCH	:=	-marm
 
-CFLAGS	:=	-g -O2\
+CFLAGS	:=	-g -O2 -Wall -Wextra -Wpedantic -Wno-unused-variable -Wno-unused-parameter\
 			-march=armv5te -mtune=arm946e-s -fomit-frame-pointer\
 			-ffunction-sections -fdata-sections\
-			-ffast-math -fdiagnostics-color=always -fno-use-cxa-atexit\
+			-ffast-math -fdiagnostics-color=always\
 			$(ARCH)
 
 CFLAGS	+=	$(INCLUDE) -DARM9 -D_GNU_SOURCE\
@@ -46,7 +46,9 @@ ifdef DEBUG
 CFLAGS += -D LOG_LEVEL=LOG_DEBUG
 endif
 
-CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions
+CXXFLAGS	:= $(CFLAGS) -std=c++14 -fno-rtti -fno-exceptions -fno-use-cxa-atexit
+
+CFLAGS	+=	-std=c11
 
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-g --specs=../stub.specs $(ARCH) -Wl,-Map,$(TARGET).map,--gc-sections
