@@ -1,0 +1,2 @@
+bool isCardPresent();
+void waitForCard();

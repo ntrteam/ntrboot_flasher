@@ -3,16 +3,16 @@
 #include "device.h"
 
 #include "hid.h"
-#include "protocol.h"
 #include "ui.h"
 #include "i2c.h"
 #include "elm.h"
+#include "platform_ntrcard.h"
 
 void menu_wait_cart_insert()
 {
-    if (REG_CARDCONF2 & 0x1)
+    if (!isCardPresent())
         ShowString(TOP_SCREEN, "No cartridge inserted\n(insert a cartridge to continue)");
-    while (REG_CARDCONF2 & 0x1) { };
+    waitForCard();
 }
 
 bool menu_show_intro_warning()

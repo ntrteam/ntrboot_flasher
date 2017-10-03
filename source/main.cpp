@@ -13,9 +13,9 @@
 #include <limits.h>
 #include <sys/iosupport.h>
 
-#include "protocol.h"
-#include "protocol_ntr.h"
+#include "platform.h"
 #include "device.h"
+#include "ntrcard.h"
 
 #include "common.h"
 #include "menu.h"
@@ -75,10 +75,7 @@ void ntrboot_flasher()
 
     reselect_cart: while(selected_flashcart == 0)
     {
-        Cart_Init();
-        uint32_t chip_id = Cart_GetID();
-        uint8_t *header = (uint8_t*)malloc(0x1000);
-        NTR_CmdReadHeader(header);
+        ntrcard::init();
 
         int8_t flashcart_index = menu_select_flashcart();
         if (flashcart_index == -1) {

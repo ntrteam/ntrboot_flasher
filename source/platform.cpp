@@ -2,17 +2,12 @@
 
 #include "common.h"
 #include "device.h"
-#include "protocol.h"
-#include "protocol_ntr.h"
+#include "platform.h"
 #include "ui.h"
 
 #include <cstdarg>
 
-void Flashcart::sendCommand(const uint8_t *cmdbuf, uint16_t response_len, uint8_t *resp, uint32_t flags) {
-    NTR_SendCommand(cmdbuf, response_len, flags, resp);
-}
-
-void Flashcart::showProgress(uint32_t current, uint32_t total, const char* status_string) {
+void platform::showProgress(uint32_t current, uint32_t total, const char* status_string) {
     ShowProgress(BOTTOM_SCREEN, current, total, status_string);
 }
 
@@ -26,6 +21,7 @@ static void open_logfile(void) {
 }
 
 void close_logfile(void) {
+    if (!logfile) return;
     fclose(logfile);
     logfile = nullptr;
 }
@@ -34,8 +30,7 @@ void close_logfile(void) {
 #define LOG_LEVEL LOG_INFO
 #endif
 
-int Flashcart::logMessage(log_priority priority, const char *fmt, ...) {
-    if (priority < LOG_LEVEL) return 0;
+int platform::logMessage(log_priority priority, const char *fmt, ...) {
     if (!logfile) {
         open_logfile(); // automagicly open.
         if (!logfile) return -1;
