@@ -7,10 +7,6 @@
 
 #include <cstdarg>
 
-void platform::showProgress(uint32_t current, uint32_t total, const char* status_string) {
-    ShowProgress(BOTTOM_SCREEN, current, total, status_string);
-}
-
 static FILE *logfile = nullptr;
 
 static void open_logfile(void) {
@@ -30,7 +26,13 @@ void close_logfile(void) {
 #define LOG_LEVEL LOG_INFO
 #endif
 
-int platform::logMessage(log_priority priority, const char *fmt, ...) {
+namespace flashcart_core {
+namespace platform {
+void showProgress(uint32_t current, uint32_t total, const char* status_string) {
+    ShowProgress(BOTTOM_SCREEN, current, total, status_string);
+}
+
+int logMessage(log_priority priority, const char *fmt, ...) {
     if (!logfile) {
         open_logfile(); // automagicly open.
         if (!logfile) return -1;
@@ -58,4 +60,6 @@ int platform::logMessage(log_priority priority, const char *fmt, ...) {
 
     free(log_fmt);
     return result;
+}
+}
 }

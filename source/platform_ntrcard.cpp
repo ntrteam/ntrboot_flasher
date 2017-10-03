@@ -56,6 +56,7 @@ void waitForCard() {
     while (REG_CARDCONF2 & 0x1);
 }
 
+namespace flashcart_core {
 namespace platform {
 extern const bool HAS_HW_KEY2 = true;
 
@@ -158,5 +159,6 @@ void initKey2Seed(uint64_t x, uint64_t y) {
     REG_SEEDY_H = yh;
     platform::logMessage(LOG_DEBUG, "Seeding KEY2: x = %02X %08X y = %02X %08X", xh, xl, yh, yl);
     REG_ROMCNT = ROMCNT_NRESET | ROMCNT_SEC_SEED | ROMCNT_SEC_EN | ROMCNT_SEC_DAT;
+}
 }
 }

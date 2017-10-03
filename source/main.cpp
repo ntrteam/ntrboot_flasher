@@ -28,6 +28,10 @@
 #include "blowfish_dev_bin.h"
 #include "blowfish_retail_bin.h"
 
+using flashcart_core::Flashcart;
+using flashcart_core::flashcart_list;
+namespace ntrcard = flashcart_core::ntrcard;
+
 void ntrboot_flasher();
 
 void ntrboot_dump_flash();

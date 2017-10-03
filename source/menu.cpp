@@ -8,6 +8,9 @@
 #include "elm.h"
 #include "platform_ntrcard.h"
 
+using flashcart_core::Flashcart;
+using flashcart_core::flashcart_list;
+
 void menu_wait_cart_insert()
 {
     if (!isCardPresent())
