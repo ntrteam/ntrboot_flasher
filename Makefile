@@ -42,10 +42,6 @@ CFLAGS	+=	$(INCLUDE) -DARM9 -D_GNU_SOURCE\
 			-DNTRBOOT_FLASHER_VERSION=\"$(NTRBOOT_FLASHER_VERSION)\"\
 			-DFLASHCART_CORE_VERSION=\"$(FLASHCART_CORE_VERSION)\"
 
-ifdef DEBUG
-CFLAGS += -D LOG_LEVEL=LOG_DEBUG
-endif
-
 CXXFLAGS	:= $(CFLAGS) -std=c++14 -fno-rtti -fno-exceptions -fno-use-cxa-atexit
 
 CFLAGS	+=	-std=c11

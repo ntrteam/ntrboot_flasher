@@ -7,13 +7,19 @@
 
 #include <cstdarg>
 
-static FILE *logfile = nullptr;
+namespace {
 
-static void open_logfile(void) {
+FILE *logfile = nullptr;
+
+void open_logfile(void) {
     static bool first_open = true;
     // We want to overwrite if this is our first time opening the file this run.
     logfile = fopen("fat1:/ntrboot/ntrboot.log", first_open ? "w" : "a");
     first_open = false;
+}
+
+int loglevel = flashcart_core::LOG_INFO;
+
 }
 
 void close_logfile(void) {
@@ -22,10 +28,6 @@ void close_logfile(void) {
     logfile = nullptr;
 }
 
-#ifndef LOG_LEVEL
-#define LOG_LEVEL LOG_INFO
-#endif
-
 namespace flashcart_core {
 namespace platform {
 void showProgress(uint32_t current, uint32_t total, const char* status_string) {
@@ -33,6 +35,8 @@ void showProgress(uint32_t current, uint32_t total, const char* status_string) {
 }
 
 int logMessage(log_priority priority, const char *fmt, ...) {
+    if (priority < loglevel) return 0;
+
     if (!logfile) {
         open_logfile(); // automagicly open.
         if (!logfile) return -1;
