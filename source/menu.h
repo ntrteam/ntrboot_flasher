@@ -20,3 +20,6 @@ uint8_t menu_flashcart_menu(const char* flashcart_name);
 
 // From platform.cpp
 void close_logfile(void);
+char const *const getLoglevelStr(void);
+void toggleLoglevel(void);
+

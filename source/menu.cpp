@@ -68,8 +68,13 @@ int8_t menu_select_flashcart()
         DrawStringF(TOP_SCREEN, 10,  1, COLOR_WHITE, COLOR_BLUE, "Select your flashcart:");
         DrawStringF(TOP_SCREEN, SCREEN_WIDTH_TOP - 250, 1, COLOR_WHITE, COLOR_BLUE, "<A> Select  <B> Poweroff  <START> Reboot  <SELECT> Unmount SD");
 
+        DrawRectangle(TOP_SCREEN, 0, SCREEN_HEIGHT-24, SCREEN_WIDTH_TOP, 24, COLOR_LIGHTGREY);
+
         DrawStringF(TOP_SCREEN, 10, SCREEN_HEIGHT-23, COLOR_BLACK, COLOR_LIGHTGREY, "ntrboot_flasher: %s", NTRBOOT_FLASHER_VERSION);
         DrawStringF(TOP_SCREEN, 10, SCREEN_HEIGHT-11, COLOR_BLACK, COLOR_LIGHTGREY, "flashcart_core:  %s", FLASHCART_CORE_VERSION);
+
+        DrawStringF(TOP_SCREEN, SCREEN_WIDTH_TOP - 130, SCREEN_HEIGHT-23, COLOR_BLACK, COLOR_LIGHTGREY, "<Y> Toggle log level");
+        DrawStringF(TOP_SCREEN, SCREEN_WIDTH_TOP - 130, SCREEN_HEIGHT-11, COLOR_BLACK, COLOR_LIGHTGREY, "Log level: %s", getLoglevelStr());
 
         // todo: scroll through this, we can only have 23 on the screen at once
         size_t i = 0;
@@ -98,6 +103,7 @@ int8_t menu_select_flashcart()
 
         if (keys & BUTTON_A) return deviceOption;
         if (keys & BUTTON_B) return -1;
+        if (keys & BUTTON_Y) toggleLoglevel();
         if (keys & BUTTON_START) {
             ELM_Unmount();
             i2cReboot();

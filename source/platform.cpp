@@ -8,6 +8,7 @@
 #include <cstdarg>
 
 namespace {
+using namespace flashcart_core;
 
 FILE *logfile = nullptr;
 
@@ -18,7 +19,15 @@ void open_logfile(void) {
     first_open = false;
 }
 
-int loglevel = flashcart_core::LOG_INFO;
+int loglevel = LOG_INFO;
+
+char const *const priority_strings[] = {
+    [LOG_DEBUG] = "DEBUG",
+    [LOG_INFO] = "INFO",
+    [LOG_NOTICE] = "NOTICE",
+    [LOG_WARN] = "WARN",
+    [LOG_ERR] = "ERROR"
+};
 
 }
 
@@ -26,6 +35,17 @@ void close_logfile(void) {
     if (!logfile) return;
     fclose(logfile);
     logfile = nullptr;
+}
+
+char const *const getLoglevelStr(void) {
+    return priority_strings[loglevel];
+}
+
+void toggleLoglevel(void) {
+    if (loglevel == 0) {
+        loglevel = LOG_PRIORITY_MAX;
+    }
+    loglevel--;
 }
 
 namespace flashcart_core {
@@ -44,13 +64,6 @@ int logMessage(log_priority priority, const char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
 
-    static char const *const priority_strings[] = {
-        [LOG_DEBUG] = "DEBUG",
-        [LOG_INFO] = "INFO",
-        [LOG_NOTICE] = "NOTICE",
-        [LOG_WARN] = "WARN",
-        [LOG_ERR] = "ERROR"
-    };
     const char *priority_str = (priority >= LOG_PRIORITY_MAX) ? "?!#$" : priority_strings[priority];
 
     char *log_fmt;
