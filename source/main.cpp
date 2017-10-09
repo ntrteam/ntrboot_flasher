@@ -83,7 +83,6 @@ void ntrboot_flasher()
 
         int8_t flashcart_index = menu_select_flashcart();
         if (flashcart_index == -1) {
-            close_logfile();
             ELM_Unmount();
             return;
         }
@@ -117,11 +116,9 @@ void ntrboot_flasher()
                 goto reselect_cart; // keeps code complexity down ¯\_(ツ)_/¯
                 break;
             case MENU_EXIT:
-                close_logfile();
                 ELM_Unmount();
                 return;
             case MENU_REBOOT:
-                close_logfile();
                 ELM_Unmount();
                 i2cReboot();
                 return;

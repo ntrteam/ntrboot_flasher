@@ -44,7 +44,6 @@ bool menu_show_intro_warning()
 }
 
 void menu_unmount() {
-    close_logfile();
     ELM_Unmount();
     ClearScreen(TOP_SCREEN, STD_COLOR_BG);
     DrawStringF(TOP_SCREEN, 10, 10, STD_COLOR_FONT, STD_COLOR_BG, "It is now safe to remove your SD card.");
@@ -74,7 +73,7 @@ int8_t menu_select_flashcart()
         DrawStringF(TOP_SCREEN, 10, SCREEN_HEIGHT-11, COLOR_BLACK, COLOR_LIGHTGREY, "flashcart_core:  %s", FLASHCART_CORE_VERSION);
 
         DrawStringF(TOP_SCREEN, SCREEN_WIDTH_TOP - 130, SCREEN_HEIGHT-23, COLOR_BLACK, COLOR_LIGHTGREY, "<Y> Toggle log level");
-        DrawStringF(TOP_SCREEN, SCREEN_WIDTH_TOP - 130, SCREEN_HEIGHT-11, COLOR_BLACK, COLOR_LIGHTGREY, "Log level: %s", getLoglevelStr());
+        DrawStringF(TOP_SCREEN, SCREEN_WIDTH_TOP - 130, SCREEN_HEIGHT-11, COLOR_BLACK, COLOR_LIGHTGREY, "Log level: %s", loglevel_str());
 
         // todo: scroll through this, we can only have 23 on the screen at once
         size_t i = 0;

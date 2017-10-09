@@ -10,15 +10,6 @@
 namespace {
 using namespace flashcart_core;
 
-FILE *logfile = nullptr;
-
-void open_logfile(void) {
-    static bool first_open = true;
-    // We want to overwrite if this is our first time opening the file this run.
-    logfile = fopen("fat1:/ntrboot/ntrboot.log", first_open ? "w" : "a");
-    first_open = false;
-}
-
 int loglevel = LOG_INFO;
 
 char const *const priority_strings[] = {
@@ -29,27 +20,28 @@ char const *const priority_strings[] = {
     [LOG_ERR] = "ERROR"
 };
 
+char const * prioritytostr(log_priority priority) {
+    return (priority >= LOG_PRIORITY_MAX) ? "?!#$" : priority_strings[priority];
 }
 
-void close_logfile(void) {
-    if (!logfile) return;
-    fclose(logfile);
-    logfile = nullptr;
+
 }
 
-char const *const getLoglevelStr(void) {
-    return priority_strings[loglevel];
+char const * loglevel_str() {
+    return prioritytostr((log_priority)loglevel);
 }
 
 void toggleLoglevel(void) {
     if (loglevel == 0) {
         loglevel = LOG_PRIORITY_MAX;
     }
-    loglevel--;
+    loglevel = loglevel - 1;
 }
 
 namespace flashcart_core {
-namespace platform {
+    namespace platform {
+
+
 void showProgress(uint32_t current, uint32_t total, const char* status_string) {
     ShowProgress(BOTTOM_SCREEN, current, total, status_string);
 }
@@ -57,14 +49,16 @@ void showProgress(uint32_t current, uint32_t total, const char* status_string) {
 int logMessage(log_priority priority, const char *fmt, ...) {
     if (priority < loglevel) return 0;
 
-    if (!logfile) {
-        open_logfile(); // automagicly open.
-        if (!logfile) return -1;
-    }
+    static bool first_open = true;
+    // Overwrite if this is our first time opening the file.
+    FILE *logfile = fopen("fat1:/ntrboot/ntrboot.log", first_open ? "w" : "a");
+    if (!logfile) return -1;
+    first_open = false;
+
     va_list args;
     va_start(args, fmt);
 
-    const char *priority_str = (priority >= LOG_PRIORITY_MAX) ? "?!#$" : priority_strings[priority];
+    const char *priority_str = prioritytostr(priority);
 
     char *log_fmt;
     if (asprintf(&log_fmt, "[%s]: %s\n", priority_str, fmt) < 0) {
@@ -72,11 +66,13 @@ int logMessage(log_priority priority, const char *fmt, ...) {
     }
 
     int result = vfprintf(logfile, log_fmt, args);
-    fflush(logfile); // Make sure we get logs written to the SD card.
+    fclose(logfile);
     va_end(args);
 
     free(log_fmt);
     return result;
 }
-}
+
+
+    }
 }
