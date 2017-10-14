@@ -139,7 +139,6 @@ void ntrboot_dump_flash() {
     }
 
     if (selected_flashcart->readFlash(0, length, mem)) {
-        ShowPrompt(BOTTOM_SCREEN, false, "Read from flash successfully.");
         //Create folder if it doesn't exist
         struct stat st;
         if (stat("fat1:/ntrboot", &st) == -1) {
