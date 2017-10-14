@@ -133,24 +133,29 @@ void ntrboot_dump_flash() {
     uint32_t length = selected_flashcart->getMaxLength();
 
     uint8_t* mem = (uint8_t*)malloc(length);
-    if (mem == NULL)
+    if (mem == NULL) {
         ShowPrompt(BOTTOM_SCREEN, false, "Failed to allocate memory");
-
-    selected_flashcart->readFlash(0, length, mem);
-
-    //Create folder if it doesn't exist
-    struct stat st;
-    if (stat("fat1:/ntrboot", &st) == -1) {
-        mkdir("fat1:/ntrboot", 0700);
+        return;
     }
 
-    FILE *f = fopen("fat1:/ntrboot/backup.bin","wb");
-    fwrite (mem, 1, length, f);
-    fclose(f);
+    if (selected_flashcart->readFlash(0, length, mem)) {
+        //Create folder if it doesn't exist
+        struct stat st;
+        if (stat("fat1:/ntrboot", &st) == -1) {
+            mkdir("fat1:/ntrboot", 0700);
+        }
+
+        FILE *f = fopen("fat1:/ntrboot/backup.bin","wb");
+        fwrite (mem, 1, length, f);
+        fclose(f);
+
+        DrawStringF(TOP_SCREEN, 10, 150, COLOR_GREEN, STD_COLOR_BG, "Dump Complete!");
+    } else {
+        ShowPrompt(BOTTOM_SCREEN, false, "Read from flash failed.");
+    }
 
     free(mem);
 
-    DrawStringF(TOP_SCREEN, 10, 150, COLOR_GREEN, STD_COLOR_BG, "Dump Complete!");
     DrawStringF(TOP_SCREEN, 10, 160, STD_COLOR_FONT, STD_COLOR_BG, "Press <A> to return to the main menu.");
 
     WaitButton(BUTTON_A);
@@ -166,41 +171,59 @@ void ntrboot_restore_flash() {
     {
         fseek(f,0,SEEK_END);
 
-        uint32_t length = ftell(f);
-        uint8_t* mem = (uint8_t*)memalign(4,length);
-        uint8_t* memp = mem;
-
-        fseek(f,0,SEEK_SET);
-        fread (mem, 1, length, f);
-
-        fclose(f);
-
         uint32_t flash_length = selected_flashcart->getMaxLength();
         uint8_t* flash_mem = (uint8_t*)memalign(4,flash_length);
         uint8_t* flash_memp = flash_mem;
 
-        DrawStringF(TOP_SCREEN, 10, 40, STD_COLOR_FONT, STD_COLOR_BG, "Reading...");
-        selected_flashcart->readFlash(0, length, flash_memp);
+        uint32_t length = ftell(f);
+        if (length > flash_length) {
+            length = flash_length;
+        }
+        uint8_t* mem = (uint8_t*)memalign(4,length);
+        uint8_t* memp = mem;
+        if (flash_mem && mem) {
 
-        int written_chunk = 0;
-        const int chunk_size = 64*1024;
-        for(uint32_t j=0; j<length; j+=chunk_size)
-        {
-            DrawStringF(TOP_SCREEN, 10, 50, STD_COLOR_FONT, STD_COLOR_BG, "Checking %08X", j);
-            if(memcmp(flash_memp+j,memp+j,chunk_size) != 0)
+            fseek(f,0,SEEK_SET);
+            fread (mem, 1, length, f);
+
+            DrawStringF(TOP_SCREEN, 10, 40, STD_COLOR_FONT, STD_COLOR_BG, "Reading...");
+            selected_flashcart->readFlash(0, length, flash_memp);
+
+            bool success = false;
+            int written_chunk = 0;
+            const int chunk_size = 64*1024;
+            for(uint32_t j=0; j<length; j+=chunk_size)
             {
-                DrawStringF(TOP_SCREEN, 10, 60, STD_COLOR_FONT, STD_COLOR_BG, "Writing chunk %08X", j);
-                selected_flashcart->writeFlash(j, chunk_size, memp+j);
-                written_chunk++;
-                DrawStringF(TOP_SCREEN, 10, 70, STD_COLOR_FONT, STD_COLOR_BG, "Chunks written %d (%08X)", written_chunk, written_chunk);
+                DrawStringF(TOP_SCREEN, 10, 50, STD_COLOR_FONT, STD_COLOR_BG, "Checking %08X", j);
+                if(memcmp(flash_memp+j,memp+j,chunk_size) != 0)
+                {
+                    DrawStringF(TOP_SCREEN, 10, 60, STD_COLOR_FONT, STD_COLOR_BG, "Writing chunk %08X", j);
+                    success = selected_flashcart->writeFlash(j, chunk_size, memp+j);
+                    if (!success) {
+                        break;
+                    }
+                    written_chunk++;
+                    DrawStringF(TOP_SCREEN, 10, 70, STD_COLOR_FONT, STD_COLOR_BG, "Chunks written %d (%08X)", written_chunk, written_chunk);
+                }
             }
+
+            if (success) {
+                DrawStringF(TOP_SCREEN, 10, 90, COLOR_GREEN, STD_COLOR_BG, "Restoring Complete!");
+            } else {
+                DrawStringF(TOP_SCREEN, 10, 90, COLOR_GREEN, STD_COLOR_BG, "Restoring failed.");
+            }
+        } else {
+            ShowPrompt(BOTTOM_SCREEN, false, "Failed to allocate memory");
         }
 
-        free(flash_mem);
+        if (flash_mem) {
+            free(flash_mem);
+        }
+        if (mem) {
+            free(mem);
+        }
 
-        DrawStringF(TOP_SCREEN, 10, 90, COLOR_GREEN, STD_COLOR_BG, "Restoring Complete!");
-
-        free(mem);
+        fclose(f);
     }
     else
         DrawStringF(TOP_SCREEN, 10, 40, COLOR_RED, STD_COLOR_BG, "Restore file was not found.");
@@ -238,15 +261,23 @@ void ntrboot_inject() {
         fseek(f, 0, SEEK_END);
         size_t firm_size = ftell(f);
         uint8_t *firm = (uint8_t*)malloc(firm_size);
-        fseek(f, 0, SEEK_SET);
-        fread(firm, 1, firm_size, f);
+        if (firm) {
+            fseek(f, 0, SEEK_SET);
+            fread(firm, 1, firm_size, f);
+            DrawStringF(TOP_SCREEN, 10, 80, COLOR_GREEN, STD_COLOR_BG, "Injecting...");
+
+            if (selected_flashcart->injectNtrBoot((uint8_t *)blowfish_key, firm, firm_size)) {
+                DrawStringF(TOP_SCREEN, 10, 90, COLOR_GREEN, STD_COLOR_BG, "Injection Complete!");
+            } else {
+                DrawStringF(TOP_SCREEN, 10, 90, COLOR_GREEN, STD_COLOR_BG, "Injection failed.");
+            }
+
+            free(firm);
+        } else {
+            ShowPrompt(BOTTOM_SCREEN, false, "Failed to allocate memory");
+        }
+
         fclose(f);
-
-        DrawStringF(TOP_SCREEN, 10, 80, COLOR_GREEN, STD_COLOR_BG, "Injecting...");
-
-        selected_flashcart->injectNtrBoot((uint8_t *)blowfish_key, firm, firm_size);
-
-        DrawStringF(TOP_SCREEN, 10, 90, COLOR_GREEN, STD_COLOR_BG, "Injection Complete!");
     } else
         DrawStringF(TOP_SCREEN, 10, 80, COLOR_RED, STD_COLOR_BG, "/ntrboot/boot9strap_ntr%s.firm not found", (button & BUTTON_Y ? "_dev" : ""));
 
