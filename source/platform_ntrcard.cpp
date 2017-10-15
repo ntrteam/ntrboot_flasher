@@ -38,6 +38,8 @@
 #define ROMCNT_SEC_DAT          (1u << 13)              // The data transfer will be hardware encrypted (KEY2)
 #define ROMCNT_DELAY1(n)        ((n) & 0x1FFFu)         // Transfer delay length part 1
 #define ROMCNT_DELAY1_MASK      (ROMCNT_DELAY1(0x1FFF))
+#define ROMCNT_CMD_SETTINGS     (ROMCNT_DELAY1_MASK | ROMCNT_DELAY2_MASK | ROMCNT_SEC_LARGE | \
+                                    ROMCNT_SEC_CMD | ROMCNT_SEC_DAT | ROMCNT_CLK_SLOW | ROMCNT_SEC_EN)
 
 #define MCNT_CR1_ENABLE         0x8000u
 #define MCNT_CR1_IRQ            0x4000u
@@ -113,12 +115,8 @@ bool sendCommand(const uint8_t *cmdbuf, uint16_t response_len, uint8_t *const re
     }
     REG_CMD = *reinterpret_cast<const uint64_t *>(cmdbuf);
     uint32_t bitflags = ROMCNT_ACTIVATE | ROMCNT_NRESET | ROMCNT_BLK_SIZE(blksizeflag) |
-        ROMCNT_DELAY1(flags.pre_delay) | ROMCNT_DELAY2(flags.post_delay) |
-        (flags.large_secure_area_read ? ROMCNT_SEC_LARGE : 0) |
-        (flags.key2_command ? ROMCNT_SEC_CMD : 0) |
-        (flags.key2_response ? ROMCNT_SEC_DAT : 0) |
-        (flags.slow_clock ? ROMCNT_CLK_SLOW : 0) |
-        ((flags.key2_command || flags.key2_response) ? ROMCNT_SEC_EN : 0);
+        ((flags.key2_command() || flags.key2_response()) ? ROMCNT_SEC_EN : 0) |
+        (static_cast<uint32_t>(flags) & ROMCNT_CMD_SETTINGS);
     platform::logMessage(LOG_DEBUG, "ROMCNT = 0x%08X", bitflags);
     REG_ROMCNT = bitflags;
 
