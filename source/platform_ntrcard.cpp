@@ -1,10 +1,14 @@
 #include <cstdint>
 #include <cstring>
 
+#include "types.h"
 #include "ntrcard.h"
 #include "device.h"
 #include "platform.h"
 #include "delay.h"
+
+#include "blowfish_dev_bin.h"
+#include "blowfish_retail_bin.h"
 
 #define REG_CARDCONF            (*reinterpret_cast<volatile uint16_t *>(0x1000000C))
 #define REG_CARDCONF2           (*reinterpret_cast<volatile uint8_t *>(0x10000010))
@@ -140,8 +144,22 @@ void ioDelay(std::uint32_t us) {
     ::ioDelay(us);
 }
 
-void initBlowfishPS(std::uint32_t (&ps)[ntrcard::BLOWFISH_PS_N]) {
-    std::memcpy(ps, reinterpret_cast<void *>(0x01FFE428), sizeof(ps));
+void initBlowfishPS(std::uint32_t (&ps)[ntrcard::BLOWFISH_PS_N], ntrcard::BlowfishKey key) {
+    const void *ptr;
+    switch (key) {
+        default: // blah
+        case ntrcard::BlowfishKey::NTR:
+            ptr = reinterpret_cast<void *>(0x01FFE428);
+            break;
+        case ntrcard::BlowfishKey::B9RETAIL:
+            ptr = blowfish_retail_bin;
+            break;
+        case ntrcard::BlowfishKey::B9DEV:
+            ptr = blowfish_dev_bin;
+            break;
+    }
+
+    std::memcpy(ps, ptr, sizeof(ps));
     static_assert(sizeof(ps) == 0x1048, "Wrong Blowfish PS size");
 }
 
