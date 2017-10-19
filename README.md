@@ -4,16 +4,23 @@ _A tool to flash that bootrom-hax goodness to your flashcart._
 For details on how ntrboot works, see the last few pages of [33.5c3](https://sciresm.github.io/33-and-a-half-c3/).
 
 ## Supported Carts
-![From Left to Right: Acekard 2i HW81, Acekard 2i HW44, R4i Gold 3DS RTS, R4i Gold 3DS, R4i Ultra, R4 3D Revolution, Infinity 3 R4i, R4i Gold 3DS Starter, DSTT](https://i.hentai.design/uploads/big/ea12cc28e688f1de427fd917f395f13b.png)
- - Acekard 2i HW-44
- - Acekard 2i HW-81
- - R4i Gold 3DS (RTS, revisions A5/A6/A7) (r4ids.cn)
- - R4i Ultra (r4ultra.com)
- - R4i Gold 3DS Starter (r4ids.cn)
- - R4 3D Revolution (r4idsn.com)
- - Infinity 3 R4i (r4infinity.com)
- - DSTT (**[some flash chips only!](https://gist.github.com/Hikari-chin/6b48f1bb8dd15136403c15c39fafdb42)**)
+![From Left to Right: Acekard 2i HW81, Acekard 2i HW44, R4i Gold 3DS RTS, R4i Gold 3DS, R4i Ultra, R4 3D Revolution, DSTT, R4i-SDHC RTS Lite, R4i-SDHC Dual-Core, R4-SDHC Gold Pro, R4i 3DS RTS, Infinity 3 R4i, R4i Gold 3DS Deluxe Edition, R4i-B9S](https://i.hentai.design/uploads/big/7f6f676a2df3574c30ebc65b61c130df.png)
+- Acekard 2i HW-44
+- Acekard 2i HW-81
+- DSTT (**some flash chips only!**)
+- Infinity 3 R4i (r4infinity.com)
+- R4 3D Revolution (r4idsn.com)
+- R4i 3DS RTS (r4i-sdhc.com)
+- R4i Gold 3DS (RTS, revisions A5/A6/A7) (r4ids.cn)
+- R4i Gold 3DS Deluxe Edition (r4ids.cn) (**variants of this such as 3dslink, Orange 3DS, etc. may work as well, but have not been tested!**)
+- R4i Ultra (r4ultra.com)
+- R4i-B9S (r4i-sdhc.com)
+- R4i-SDHC Dual-Core (r4isdhc.com)
+- R4i-SDHC Gold Pro (r4isdhc.com)
+- R4i-SDHC RTS Lite (r4isdhc.com)
 
+**Note:** Flashcarts from r4isdhc.com tend to have yearly re-releases; all versions of these carts (2014-2017) should work but not all have been tested. 
+ 
 Note that in some rare circumstances, it may be possible for the flashing process to **brick** a counterfeit flashcart and render it permanently unusable. This is unlikely, but nevertheless only the genuine (i.e. from the original manufacturer) versions of the listed flashcarts are officially supported. There is not a good way to test for counterfeit carts, unfortunately, as they usually report the same chip ID and revision as legitimate carts. Note that you are more likely to receive a counterfeit R4 than a counterfeit AK2i. Though there is a chance that many counterfeit versions of the listed flashcarts will work fine, there is too much variance to guarantee that any counterfeit is supported. As such, use this tool at your own risk.
 
 ## Installation/Usage
