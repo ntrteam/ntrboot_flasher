@@ -1,29 +1,19 @@
-// i don't think we need to include half this shit
-#include <cstdio>
-#include <cstdlib>
-#include <stdint.h>
-#include <string.h>
-#include <malloc.h>
-#include <unistd.h>
-#include <elm.h>
-#include <sdmmc.h>
-#include <dirent.h>
-#include <errno.h>
-#include <inttypes.h>
-#include <limits.h>
-#include <sys/iosupport.h>
-
-#include "platform.h"
-#include "device.h"
-#include "ntrcard.h"
-
 #include "common.h"
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <malloc.h>
+
+#include <elm.h>
+
 #include "menu.h"
 #include "ui.h"
 
+#include "device.h"
+#include "ntrcard.h"
+
 #include "i2c.h"
 #include "hid.h"
-#include "delay.h"
 
 #include "blowfish_dev_bin.h"
 #include "blowfish_retail_bin.h"

@@ -1,10 +1,10 @@
 #pragma once
 
-#include <inttypes.h>
-#include <stddef.h>
-#include <stdbool.h>
-#include <string.h>
+#include <cinttypes>
+#include <cstddef>
+#include <cstdbool>
+#include <cstring>
 #include <ctype.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <types.h>
+#include <cstdlib>
+#include <cstdio>
+#include "types.h"
