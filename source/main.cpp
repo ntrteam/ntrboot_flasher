@@ -15,6 +15,7 @@
 
 #include "i2c.h"
 #include "hid.h"
+#include "crypto.h"
 
 #include "blowfish_dev_bin.h"
 #include "blowfish_retail_bin.h"
@@ -239,45 +240,70 @@ void ntrboot_inject() {
         "Press <B> to return to the main menu.");
 
     FILE *f = NULL;
+    FILE *fhash = NULL;
     uint8_t *blowfish_key = NULL;
 
     uint32_t button = WaitButton(BUTTON_A | BUTTON_B | BUTTON_Y);
+    const char *fpath, *fhashpath;
     if (button & BUTTON_A)
     {
-        f = fopen("fat1:/ntrboot/boot9strap_ntr.firm","rb");;
+        fpath = "fat1:/ntrboot/boot9strap_ntr.firm";
+        fhashpath = "fat1:/ntrboot/boot9strap_ntr.firm.sha";
         blowfish_key = (uint8_t*)blowfish_retail_bin;
     }
     else if (button & BUTTON_Y)
     {
-        f = fopen("fat1:/ntrboot/boot9strap_ntr_dev.firm","rb");
+        fpath = "fat1:/ntrboot/boot9strap_ntr_dev.firm";
+        fhashpath = "fat1:/ntrboot/boot9strap_ntr_dev.firm.sha";
         blowfish_key = (uint8_t *)blowfish_dev_bin;
     }
     else if (button & BUTTON_B) return;
+    else __builtin_unreachable();
 
+    f = fopen(fpath, "rb");
     if (f != NULL)
     {
         fseek(f, 0, SEEK_END);
         size_t firm_size = ftell(f);
         uint8_t *firm = (uint8_t*)malloc(firm_size);
+
         if (firm) {
             fseek(f, 0, SEEK_SET);
             fread(firm, 1, firm_size, f);
-            DrawString(TOP_SCREEN, 10, 80, COLOR_GREEN, STD_COLOR_BG, "Injecting...");
 
-            if (selected_flashcart->injectNtrBoot((uint8_t *)blowfish_key, firm, firm_size)) {
-                DrawString(TOP_SCREEN, 10, 90, COLOR_GREEN, STD_COLOR_BG, "Injection Complete!");
+            fhash = fopen(fhashpath, "rb");
+            if (fhash) {
+                uint8_t hash[32];
+                fseek(fhash, 0, SEEK_SET);
+                if (fread(hash, 1, sizeof(hash), fhash) == sizeof(hash)) {
+                    if (crypto::sha256verify(firm, firm_size, hash)) {
+                        DrawString(TOP_SCREEN, 10, 80, COLOR_GREEN, STD_COLOR_BG, "Injecting...");
+
+                        if (selected_flashcart->injectNtrBoot((uint8_t *)blowfish_key, firm, firm_size)) {
+                            DrawString(TOP_SCREEN, 10, 90, COLOR_GREEN, STD_COLOR_BG, "Injection Complete!");
+                        } else {
+                            DrawString(TOP_SCREEN, 10, 90, COLOR_RED, STD_COLOR_BG, "Injection failed.");
+                        }
+                    } else {
+                        DrawString(TOP_SCREEN, 10, 80, COLOR_RED, STD_COLOR_BG, "Failed to verify FIRM integrity");
+                    }
+                } else {
+                    DrawStringF(TOP_SCREEN, 10, 80, COLOR_RED, STD_COLOR_BG, "%s is corrupt", fhashpath + 5 /* "fat1:" */);
+                }
+
+                fclose(fhash);
             } else {
-                DrawString(TOP_SCREEN, 10, 90, COLOR_GREEN, STD_COLOR_BG, "Injection failed.");
+                DrawString(TOP_SCREEN, 10, 80, COLOR_RED, STD_COLOR_BG, "%s not found", fhashpath + 5 /* "fat1:" */);
             }
 
             free(firm);
         } else {
-            ShowPrompt(BOTTOM_SCREEN, false, "Failed to allocate memory");
+            DrawStringF(TOP_SCREEN, 10, 80, COLOR_RED, STD_COLOR_BG, "Failed to allocate memory");
         }
 
         fclose(f);
     } else
-        DrawStringF(TOP_SCREEN, 10, 80, COLOR_RED, STD_COLOR_BG, "/ntrboot/boot9strap_ntr%s.firm not found", (button & BUTTON_Y ? "_dev" : ""));
+        DrawStringF(TOP_SCREEN, 10, 80, COLOR_RED, STD_COLOR_BG, "%s not found", fpath + 5 /* "fat1:" */);
 
     DrawString(TOP_SCREEN, 10, 100, STD_COLOR_FONT, STD_COLOR_BG, "Press <A> to return to the main menu.");
     WaitButton(BUTTON_A);
