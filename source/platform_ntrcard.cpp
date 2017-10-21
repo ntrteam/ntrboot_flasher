@@ -65,6 +65,8 @@ void waitForCard() {
 namespace flashcart_core {
 namespace platform {
 extern const bool HAS_HW_KEY2 = true;
+extern const bool CAN_RESET = true;
+extern const ntrcard::Status INITIAL_ENCRYPTION = ntrcard::Status::RAW;
 
 int32_t resetCard() {
     if (REG_CARDCONF2 & 0x1) {
