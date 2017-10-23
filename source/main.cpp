@@ -1,4 +1,5 @@
 #include "common.h"
+#include <cerrno>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -128,20 +129,27 @@ void ntrboot_dump_flash() {
         return;
     }
 
-    if (selected_flashcart->readFlash(0, length, mem)) {
-        //Create folder if it doesn't exist
-        struct stat st;
-        if (stat("fat1:/ntrboot", &st) == -1) {
-            mkdir("fat1:/ntrboot", 0700);
+    //Create folder if it doesn't exist
+    struct stat st;
+    if (stat("fat1:/ntrboot", &st) == -1) {
+        mkdir("fat1:/ntrboot", 0700);
+    }
+
+    FILE *f = fopen("fat1:/ntrboot/backup.bin","wb");
+    if (f) {
+        if (selected_flashcart->readFlash(0, length, mem)) {
+            FILE *f = fopen("fat1:/ntrboot/backup.bin","wb");
+            fwrite (mem, 1, length, f);
+            fclose(f);
+
+            DrawStringF(TOP_SCREEN, 10, 150, COLOR_GREEN, STD_COLOR_BG, "Dump Complete!");
+        } else {
+            ShowPrompt(BOTTOM_SCREEN, false, "Read from flash failed.");
         }
-
-        FILE *f = fopen("fat1:/ntrboot/backup.bin","wb");
-        fwrite (mem, 1, length, f);
-        fclose(f);
-
-        DrawStringF(TOP_SCREEN, 10, 150, COLOR_GREEN, STD_COLOR_BG, "Dump Complete!");
     } else {
-        ShowPrompt(BOTTOM_SCREEN, false, "Read from flash failed.");
+        DrawStringF(TOP_SCREEN, 10, 30, COLOR_RED, STD_COLOR_BG,
+            "Failed to open /ntrboot/backup.bin for writing\n"
+            "(%d %s)", errno, strerror(errno));
     }
 
     free(mem);
