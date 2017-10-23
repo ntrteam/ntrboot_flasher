@@ -61,10 +61,22 @@ void DrawCharacter(uint8_t *screen, int character, int x, int y, int color, int 
 
 void DrawString(uint8_t* screen, const char *str, int x, int y, int color, int bgcolor)
 {
-    size_t max_len = (SCREEN_WIDTH - x) / FONT_WIDTH;
-    size_t len = (strlen(str) > max_len) ? max_len : strlen(str);
-    for (size_t i = 0; i < len; i++)
-        DrawCharacter(screen, str[i], x + i * FONT_WIDTH, y, color, bgcolor);
+    const int startx = x;
+    const size_t len = strlen(str);
+    for (size_t i = 0; i < len; i++) {
+        if (str[i] == '\n') {
+            x = startx;
+            y += FONT_HEIGHT;
+            continue;
+        }
+        if ((y + FONT_HEIGHT) > SCREEN_HEIGHT) {
+            break;
+        }
+        if ((x + FONT_WIDTH) <= SCREEN_WIDTH) {
+            DrawCharacter(screen, str[i], x, y, color, bgcolor);
+        }
+        x += FONT_WIDTH;
+    }
 }
 
 void DrawStringF(uint8_t *screen, int x, int y, int color, int bgcolor, const char *format, ...)
