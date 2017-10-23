@@ -118,7 +118,7 @@ void ntrboot_flasher()
 
 void ntrboot_dump_flash() {
     ClearScreen(TOP_SCREEN, STD_COLOR_BG);
-    DrawStringF(TOP_SCREEN, 10, 20, STD_COLOR_FONT, STD_COLOR_BG, "Dumping flash");
+    DrawString(TOP_SCREEN, 10, 20, STD_COLOR_FONT, STD_COLOR_BG, "Dumping flash");
 
     uint32_t length = selected_flashcart->getMaxLength();
 
@@ -141,7 +141,7 @@ void ntrboot_dump_flash() {
             fwrite (mem, 1, length, f);
             fclose(f);
 
-            DrawStringF(TOP_SCREEN, 10, 150, COLOR_GREEN, STD_COLOR_BG, "Dump Complete!");
+            DrawString(TOP_SCREEN, 10, 150, COLOR_GREEN, STD_COLOR_BG, "Dump Complete!");
         } else {
             ShowPrompt(BOTTOM_SCREEN, false, "Read from flash failed.");
         }
@@ -153,14 +153,14 @@ void ntrboot_dump_flash() {
 
     free(mem);
 
-    DrawStringF(TOP_SCREEN, 10, 160, STD_COLOR_FONT, STD_COLOR_BG, "Press <A> to return to the main menu.");
+    DrawString(TOP_SCREEN, 10, 160, STD_COLOR_FONT, STD_COLOR_BG, "Press <A> to return to the main menu.");
 
     WaitButton(BUTTON_A);
 }
 
 void ntrboot_restore_flash() {
     ClearScreen(TOP_SCREEN, STD_COLOR_BG);
-    DrawStringF(TOP_SCREEN, 10, 20, STD_COLOR_FONT, STD_COLOR_BG, "Restoring flash");
+    DrawString(TOP_SCREEN, 10, 20, STD_COLOR_FONT, STD_COLOR_BG, "Restoring flash");
 
     FILE *f = fopen("fat1:/ntrboot/backup.bin","rb");
 
@@ -183,7 +183,7 @@ void ntrboot_restore_flash() {
             fseek(f,0,SEEK_SET);
             fread (mem, 1, length, f);
 
-            DrawStringF(TOP_SCREEN, 10, 40, STD_COLOR_FONT, STD_COLOR_BG, "Reading...");
+            DrawString(TOP_SCREEN, 10, 40, STD_COLOR_FONT, STD_COLOR_BG, "Reading...");
             selected_flashcart->readFlash(0, length, flash_memp);
 
             bool success = false;
@@ -205,9 +205,9 @@ void ntrboot_restore_flash() {
             }
 
             if (success) {
-                DrawStringF(TOP_SCREEN, 10, 90, COLOR_GREEN, STD_COLOR_BG, "Restoring Complete!");
+                DrawString(TOP_SCREEN, 10, 90, COLOR_GREEN, STD_COLOR_BG, "Restoring Complete!");
             } else {
-                DrawStringF(TOP_SCREEN, 10, 90, COLOR_GREEN, STD_COLOR_BG, "Restoring failed.");
+                DrawString(TOP_SCREEN, 10, 90, COLOR_GREEN, STD_COLOR_BG, "Restoring failed.");
             }
         } else {
             ShowPrompt(BOTTOM_SCREEN, false, "Failed to allocate memory");
@@ -223,19 +223,20 @@ void ntrboot_restore_flash() {
         fclose(f);
     }
     else
-        DrawStringF(TOP_SCREEN, 10, 40, COLOR_RED, STD_COLOR_BG, "Restore file was not found.");
+        DrawString(TOP_SCREEN, 10, 40, COLOR_RED, STD_COLOR_BG, "Restore file was not found.");
 
-    DrawStringF(TOP_SCREEN, 10, 160, STD_COLOR_FONT, STD_COLOR_BG, "Press <A> to return to the main menu.");
+    DrawString(TOP_SCREEN, 10, 160, STD_COLOR_FONT, STD_COLOR_BG, "Press <A> to return to the main menu.");
     WaitButton(BUTTON_A);
 }
 
 void ntrboot_inject() {
     ClearScreen(TOP_SCREEN, STD_COLOR_BG);
-    DrawStringF(TOP_SCREEN, 10, 20, STD_COLOR_FONT, STD_COLOR_BG, "Injecting Ntrboot");
-
-    DrawStringF(TOP_SCREEN, 10, 40, STD_COLOR_FONT, STD_COLOR_BG, "Press <A> for retail unit ntrboot");
-    DrawStringF(TOP_SCREEN, 10, 50, STD_COLOR_FONT, STD_COLOR_BG, "Press <Y> for developer unit ntrboot");
-    DrawStringF(TOP_SCREEN, 10, 60, STD_COLOR_FONT, STD_COLOR_BG, "Press <B> to return to the main menu.");
+    DrawString(TOP_SCREEN, 10, 20, STD_COLOR_FONT, STD_COLOR_BG,
+        "Injecting Ntrboot\n"
+        "\n"
+        "Press <A> for retail unit ntrboot\n"
+        "Press <Y> for developer unit ntrboot\n"
+        "Press <B> to return to the main menu.");
 
     FILE *f = NULL;
     uint8_t *blowfish_key = NULL;
@@ -261,12 +262,12 @@ void ntrboot_inject() {
         if (firm) {
             fseek(f, 0, SEEK_SET);
             fread(firm, 1, firm_size, f);
-            DrawStringF(TOP_SCREEN, 10, 80, COLOR_GREEN, STD_COLOR_BG, "Injecting...");
+            DrawString(TOP_SCREEN, 10, 80, COLOR_GREEN, STD_COLOR_BG, "Injecting...");
 
             if (selected_flashcart->injectNtrBoot((uint8_t *)blowfish_key, firm, firm_size)) {
-                DrawStringF(TOP_SCREEN, 10, 90, COLOR_GREEN, STD_COLOR_BG, "Injection Complete!");
+                DrawString(TOP_SCREEN, 10, 90, COLOR_GREEN, STD_COLOR_BG, "Injection Complete!");
             } else {
-                DrawStringF(TOP_SCREEN, 10, 90, COLOR_GREEN, STD_COLOR_BG, "Injection failed.");
+                DrawString(TOP_SCREEN, 10, 90, COLOR_GREEN, STD_COLOR_BG, "Injection failed.");
             }
 
             free(firm);
@@ -278,6 +279,6 @@ void ntrboot_inject() {
     } else
         DrawStringF(TOP_SCREEN, 10, 80, COLOR_RED, STD_COLOR_BG, "/ntrboot/boot9strap_ntr%s.firm not found", (button & BUTTON_Y ? "_dev" : ""));
 
-    DrawStringF(TOP_SCREEN, 10, 100, STD_COLOR_FONT, STD_COLOR_BG, "Press <A> to return to the main menu.");
+    DrawString(TOP_SCREEN, 10, 100, STD_COLOR_FONT, STD_COLOR_BG, "Press <A> to return to the main menu.");
     WaitButton(BUTTON_A);
 }

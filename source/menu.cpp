@@ -22,18 +22,19 @@ bool menu_show_intro_warning()
 {
     ClearScreen(TOP_SCREEN, COLOR_RED);
 
-    DrawStringF(TOP_SCREEN, 10, 10, COLOR_WHITE, COLOR_RED, "WARNING: READ THIS BEFORE CONTINUING");
-    DrawStringF(TOP_SCREEN, 10, 20, COLOR_WHITE, COLOR_RED, "------------------------------------");
-
-    DrawStringF(TOP_SCREEN, 10, 40, COLOR_WHITE, COLOR_RED, "If you don't know what you're doing: STOP. Open your browser to");
-    DrawStringF(TOP_SCREEN, 10, 50, COLOR_WHITE, COLOR_RED, "http://3ds.guide and follow the steps provided there.");
-
-    DrawStringF(TOP_SCREEN, 10, 70, COLOR_WHITE, COLOR_RED, "This software writes directly to your flashcart. It's possible");
-    DrawStringF(TOP_SCREEN, 10, 80, COLOR_WHITE, COLOR_RED, "you may brick your flashcart, rendering it unusable.");
-
-    DrawStringF(TOP_SCREEN, 10, 100, COLOR_WHITE, COLOR_RED, "ALWAYS KEEP A BACKUP");
-
-    DrawStringF(TOP_SCREEN, 10, 120, COLOR_WHITE, COLOR_RED, "<A> Continue  <B> Poweroff  <START> Reboot");
+    DrawString(TOP_SCREEN, 10, 10, COLOR_WHITE, COLOR_RED,
+        "WARNING: READ THIS BEFORE CONTINUING\n"
+        "------------------------------------\n"
+        "\n"
+        "If you don't know what you're doing: STOP. Open your browser to\n"
+        "http://3ds.guide and follow the steps provided there.\n"
+        "\n"
+        "This software writes directly to your flashcart. It's possible\n"
+        "you may brick your flashcart, rendering it unusable.\n"
+        "\n"
+        "ALWAYS KEEP A BACKUP\n"
+        "\n"
+        "<A> Continue  <B> Poweroff  <START> Reboot\n");
 
     while (HID_STATE != 0); // bug fix: wait for the HID_STATE to reset (luma seems to pass through with A button already down)
     uint32_t state = WaitButton(BUTTON_A | BUTTON_B | BUTTON_START);
@@ -46,9 +47,10 @@ bool menu_show_intro_warning()
 void menu_unmount() {
     ELM_Unmount();
     ClearScreen(TOP_SCREEN, STD_COLOR_BG);
-    DrawStringF(TOP_SCREEN, 10, 10, STD_COLOR_FONT, STD_COLOR_BG, "It is now safe to remove your SD card.");
-
-    DrawStringF(TOP_SCREEN, 10, 30, STD_COLOR_FONT, STD_COLOR_BG, "Press <A> to continue after inserting your SD card again.");
+    DrawString(TOP_SCREEN, 10, 10, STD_COLOR_FONT, STD_COLOR_BG,
+        "It is now safe to remove your SD card.\n"
+        "\n"
+        "Press <A> to continue after inserting your SD card again.");
 
     WaitButton(BUTTON_A);
     ELM_Mount();
@@ -64,15 +66,15 @@ int8_t menu_select_flashcart()
     {
         DrawRectangle(TOP_SCREEN, 0, 0, SCREEN_WIDTH_TOP, 12, COLOR_BLUE);
 
-        DrawStringF(TOP_SCREEN, 10,  1, COLOR_WHITE, COLOR_BLUE, "Select your flashcart:");
-        DrawStringF(TOP_SCREEN, SCREEN_WIDTH_TOP - 250, 1, COLOR_WHITE, COLOR_BLUE, "<A> Select  <B> Poweroff  <START> Reboot  <SELECT> Unmount SD");
+        DrawString(TOP_SCREEN, 10,  1, COLOR_WHITE, COLOR_BLUE, "Select your flashcart:");
+        DrawString(TOP_SCREEN, SCREEN_WIDTH_TOP - 250, 1, COLOR_WHITE, COLOR_BLUE, "<A> Select  <B> Poweroff  <START> Reboot  <SELECT> Unmount SD");
 
         DrawRectangle(TOP_SCREEN, 0, SCREEN_HEIGHT-24, SCREEN_WIDTH_TOP, 24, COLOR_LIGHTGREY);
 
         DrawStringF(TOP_SCREEN, 10, SCREEN_HEIGHT-23, COLOR_BLACK, COLOR_LIGHTGREY, "ntrboot_flasher: %s", NTRBOOT_FLASHER_VERSION);
         DrawStringF(TOP_SCREEN, 10, SCREEN_HEIGHT-11, COLOR_BLACK, COLOR_LIGHTGREY, "flashcart_core:  %s", FLASHCART_CORE_VERSION);
 
-        DrawStringF(TOP_SCREEN, SCREEN_WIDTH_TOP - 130, SCREEN_HEIGHT-23, COLOR_BLACK, COLOR_LIGHTGREY, "<Y> Toggle log level");
+        DrawString(TOP_SCREEN, SCREEN_WIDTH_TOP - 130, SCREEN_HEIGHT-23, COLOR_BLACK, COLOR_LIGHTGREY, "<Y> Toggle log level");
         DrawStringF(TOP_SCREEN, SCREEN_WIDTH_TOP - 130, SCREEN_HEIGHT-11, COLOR_BLACK, COLOR_LIGHTGREY, "Log level: %s", loglevel_str());
 
         // todo: scroll through this, we can only have 23 on the screen at once
@@ -85,12 +87,12 @@ int8_t menu_select_flashcart()
                 ClearScreen(BOTTOM_SCREEN, STD_COLOR_BG);
 
                 DrawRectangle(BOTTOM_SCREEN, 0, 0, SCREEN_WIDTH_TOP, 12, COLOR_BLUE);
-                DrawStringF(BOTTOM_SCREEN, 106, 0, COLOR_WHITE, COLOR_BLUE, "Selected Cart Info");
+                DrawString(BOTTOM_SCREEN, 106, 0, COLOR_WHITE, COLOR_BLUE, "Selected Cart Info");
 
                 DrawStringF(BOTTOM_SCREEN, 10, 20, STD_COLOR_FONT, STD_COLOR_BG, "Name: %s", (*it)->getName());
                 DrawStringF(BOTTOM_SCREEN, 10, 30, STD_COLOR_FONT, STD_COLOR_BG, "Author: %s", (*it)->getAuthor());
 
-                DrawStringF(BOTTOM_SCREEN, 10, 50, STD_COLOR_FONT, STD_COLOR_BG, (*it)->getDescription());
+                DrawString(BOTTOM_SCREEN, 10, 50, STD_COLOR_FONT, STD_COLOR_BG, (*it)->getDescription());
             }
         }
 
@@ -124,12 +126,12 @@ uint8_t menu_flashcart_menu(const char* flashcart_name)
     int menuOption = 0;
     while(true)
     {
-        DrawStringF(TOP_SCREEN, 10, 30, MENU_HIGHLIGHT(menuOption == MENU_DUMP)             , STD_COLOR_BG, "Dump Flash");
-        DrawStringF(TOP_SCREEN, 10, 40, MENU_HIGHLIGHT(menuOption == MENU_RESTORE)          , STD_COLOR_BG, "Restore Flash");
-        DrawStringF(TOP_SCREEN, 10, 50, MENU_HIGHLIGHT(menuOption == MENU_INJECT)           , STD_COLOR_BG, "Inject Ntrboot");
-        DrawStringF(TOP_SCREEN, 10, 70, MENU_HIGHLIGHT(menuOption == MENU_SELECT_FLASHCART) , STD_COLOR_BG, "Reselect Flashcart");
-        DrawStringF(TOP_SCREEN, 10, 90, MENU_HIGHLIGHT(menuOption == MENU_EXIT)             , STD_COLOR_BG, "Poweroff");
-        DrawStringF(TOP_SCREEN, 10, 100, MENU_HIGHLIGHT(menuOption == MENU_REBOOT)           , STD_COLOR_BG, "Reboot");
+        DrawString(TOP_SCREEN, 10, 30, MENU_HIGHLIGHT(menuOption == MENU_DUMP)             , STD_COLOR_BG, "Dump Flash");
+        DrawString(TOP_SCREEN, 10, 40, MENU_HIGHLIGHT(menuOption == MENU_RESTORE)          , STD_COLOR_BG, "Restore Flash");
+        DrawString(TOP_SCREEN, 10, 50, MENU_HIGHLIGHT(menuOption == MENU_INJECT)           , STD_COLOR_BG, "Inject Ntrboot");
+        DrawString(TOP_SCREEN, 10, 70, MENU_HIGHLIGHT(menuOption == MENU_SELECT_FLASHCART) , STD_COLOR_BG, "Reselect Flashcart");
+        DrawString(TOP_SCREEN, 10, 90, MENU_HIGHLIGHT(menuOption == MENU_EXIT)             , STD_COLOR_BG, "Poweroff");
+        DrawString(TOP_SCREEN, 10, 100, MENU_HIGHLIGHT(menuOption == MENU_REBOOT)          , STD_COLOR_BG, "Reboot");
 
         uint32_t keys = WaitButton(BUTTON_ANY);
         if (keys & BUTTON_UP) menuOption--;
