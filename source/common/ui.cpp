@@ -70,14 +70,30 @@ void DrawString(uint8_t* screen, const char *str, int x, int y, int color, int b
 void DrawStringF(uint8_t *screen, int x, int y, int color, int bgcolor, const char *format, ...)
 {
     char str[256];
+    char *p = str;
     va_list va;
 
     va_start(va, format);
-    vsprintf(str, format, va);
+    int w = vsnprintf(str, sizeof(str), format, va);
+    if (w < 0) {
+        // printf failed
+        return;
+    } else if ((unsigned int)w > sizeof(str) - 1) {
+        // cry now
+        // allocate a buffer big enough
+        char *m = (char *) malloc(w + 1);
+        if (m) {
+            vsnprintf(m, w + 1, format, va);
+            p = m;
+        } // if malloc fails, we just write the truncated string i guess
+    }
     va_end(va);
 
-    for (char* text = strtok(str, "\n"); text != NULL; text = strtok(NULL, "\n"), y += 10)
+    for (char* text = strtok(p, "\n"); text != NULL; text = strtok(NULL, "\n"), y += 10)
         DrawString(screen, text, x, y, color, bgcolor);
+    if (p != str && p) {
+        free(p);
+    }
 }
 
 void DrawHex(uint8_t *screen, unsigned int hex, int x, int y, int color, int bgcolor)
