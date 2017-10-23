@@ -46,7 +46,7 @@ void DrawRectangle(uint8_t* screen, int x, int y, int width, int height, int col
 
 void DrawCharacter(uint8_t *screen, int character, int x, int y, int color, int bgcolor);
 void DrawHex(uint8_t *screen, unsigned int hex, int x, int y, int color, int bgcolor);
-void DrawString(uint8_t *screen, const char *str, int x, int y, int color, int bgcolor);
+void DrawString(uint8_t *screen, int x, int y, int color, int bgcolor, const char *str);
 void DrawStringF(uint8_t *screen, int x, int y, int color, int bgcolor, const char *format, ...);
 void DrawHexWithName(uint8_t *screen, const char *str, unsigned int hex, int x, int y, int color, int bgcolor);
 

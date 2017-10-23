@@ -59,7 +59,7 @@ void DrawCharacter(uint8_t *screen, int character, int x, int y, int color, int 
     }
 }
 
-void DrawString(uint8_t* screen, const char *str, int x, int y, int color, int bgcolor)
+void DrawString(uint8_t* screen, int x, int y, int color, int bgcolor, const char *str)
 {
     const int startx = x;
     const size_t len = strlen(str);
@@ -101,8 +101,7 @@ void DrawStringF(uint8_t *screen, int x, int y, int color, int bgcolor, const ch
     }
     va_end(va);
 
-    for (char* text = strtok(p, "\n"); text != NULL; text = strtok(NULL, "\n"), y += 10)
-        DrawString(screen, text, x, y, color, bgcolor);
+    DrawString(screen, x, y, color, bgcolor, p);
     if (p != str && p) {
         free(p);
     }
@@ -123,7 +122,7 @@ void DrawHex(uint8_t *screen, unsigned int hex, int x, int y, int color, int bgc
 
 void DrawHexWithName(uint8_t *screen, const char *str, unsigned int hex, int x, int y, int color, int bgcolor)
 {
-    DrawString(screen, str, x, y, color, bgcolor);
+    DrawString(screen, x, y, color, bgcolor, str);
     DrawHex(screen, hex,x + strlen(str) * FONT_WIDTH, y, color, bgcolor);
 }
 
@@ -212,7 +211,7 @@ void ShowProgress(uint8_t *screen, uint32_t current, uint32_t total, const char*
     uint32_t prog_width = ((total > 0) && (current <= total)) ? (current * (bar_width-4)) / total : 0;
     uint32_t prog_percent = ((total > 0) && (current <= total)) ? (current * 100) / total : 0;
 
-    DrawString(screen, status, bar_pos_x, bar_pos_y - FONT_HEIGHT - 4, STD_COLOR_FONT, STD_COLOR_BG);
+    DrawString(screen, bar_pos_x, bar_pos_y - FONT_HEIGHT - 4, STD_COLOR_FONT, STD_COLOR_BG, status);
 
     // draw the initial outline
     if (current == 0 || last_prog_width > prog_width)
