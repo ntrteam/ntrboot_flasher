@@ -30,7 +30,7 @@ Instructions are documented at [@Plailect's](https://twitter.com/plailect?lang=e
 To compile this, you need:
 - [devkitARM r47](https://3dbrew.org/wiki/Setting_up_Development_Environment)
 - [firmtool](https://github.com/TuxSH/firmtool)
-- [flashcart_core](https://github.com/kitling/flashcart_core) - This is bundled as a submodule in ntrboot_flasher. When cloning the repo, you **must** use the --recursive option to grab it. Example: `git clone --recursive https://github.com/kitling/ntrboot_flasher.git`
+- [flashcart_core](https://github.com/ntrteam/flashcart_core) - This is bundled as a submodule in ntrboot_flasher. When cloning the repo, you **must** use the --recursive option to grab it. Example: `git clone --recursive https://github.com/ntrteam/ntrboot_flasher.git`
 - [libelm3ds](https://github.com/Normmatt/libelm3ds) - This is bundled as a submodule in ntrboot_flasher. When cloning the repo, you **must** use the --recursive option to grab it.
 
 ## Planned support/Community involvement
