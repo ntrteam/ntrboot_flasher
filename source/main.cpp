@@ -70,8 +70,6 @@ void ntrboot_flasher()
 
     reselect_cart: while(selected_flashcart == 0)
     {
-        ntrcard::init();
-
         int8_t flashcart_index = menu_select_flashcart();
         if (flashcart_index == -1) {
             ELM_Unmount();
@@ -79,6 +77,7 @@ void ntrboot_flasher()
         }
         selected_flashcart = flashcart_list->at(flashcart_index);
 
+        ntrcard::init();
         if (selected_flashcart->initialize())
             break;
         selected_flashcart->shutdown();

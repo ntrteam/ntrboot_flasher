@@ -119,11 +119,10 @@ bool sendCommand(const uint8_t *cmdbuf, uint16_t response_len, uint8_t *const re
         case 0x2000: blksizeflag = 5; break;
         case 0x4000: blksizeflag = 6; break;
     }
-    REG_CMD = *reinterpret_cast<const uint64_t *>(cmdbuf);
     uint32_t bitflags = ROMCNT_ACTIVATE | ROMCNT_NRESET | ROMCNT_BLK_SIZE(blksizeflag) |
         ((flags.key2_command() || flags.key2_response()) ? ROMCNT_SEC_EN : 0) |
         (static_cast<uint32_t>(flags) & ROMCNT_CMD_SETTINGS);
-    platform::logMessage(LOG_DEBUG, "ROMCNT = 0x%08X", bitflags);
+    REG_CMD = *reinterpret_cast<const uint64_t *>(cmdbuf);
     REG_ROMCNT = bitflags;
 
     uint32_t *cur = reinterpret_cast<uint32_t *>(resp);
