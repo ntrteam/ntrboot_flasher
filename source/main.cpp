@@ -163,68 +163,71 @@ void ntrboot_restore_flash() {
     ClearScreen(TOP_SCREEN, STD_COLOR_BG);
     DrawString(TOP_SCREEN, 10, 20, STD_COLOR_FONT, STD_COLOR_BG, "Restoring flash");
 
-    FILE *f = fopen("fat1:/ntrboot/backup.bin","rb");
+    uint8_t *flash_mem = NULL, *mem = NULL;
+    FILE *const f = fopen("fat1:/ntrboot/backup.bin","rb");
 
-    if(f != NULL)
+    if (!f) {
+        DrawString(TOP_SCREEN, 10, 40, COLOR_RED, STD_COLOR_BG, "Restore file was not found.");
+        goto fail;
+    }
+
+    // This scope is here so the locals declared below are out of scope at
+    // label `fail`.
     {
-        fseek(f,0,SEEK_END);
-
-        uint32_t flash_length = selected_flashcart->getMaxLength();
-        uint8_t* flash_mem = (uint8_t*)memalign(4,flash_length);
-        uint8_t* flash_memp = flash_mem;
-
+        fseek(f, 0, SEEK_END);
         uint32_t length = ftell(f);
+        uint32_t flash_length = selected_flashcart->getMaxLength();
         if (length > flash_length) {
             length = flash_length;
         }
-        uint8_t* mem = (uint8_t*)memalign(4,length);
-        uint8_t* memp = mem;
-        if (flash_mem && mem) {
 
-            fseek(f,0,SEEK_SET);
-            fread (mem, 1, length, f);
-
-            DrawString(TOP_SCREEN, 10, 40, STD_COLOR_FONT, STD_COLOR_BG, "Reading...");
-            selected_flashcart->readFlash(0, length, flash_memp);
-
-            bool success = false;
-            int written_chunk = 0;
-            const int chunk_size = 64*1024;
-            for(uint32_t j=0; j<length; j+=chunk_size)
-            {
-                DrawStringF(TOP_SCREEN, 10, 50, STD_COLOR_FONT, STD_COLOR_BG, "Checking %08X", j);
-                if(memcmp(flash_memp+j,memp+j,chunk_size) != 0)
-                {
-                    DrawStringF(TOP_SCREEN, 10, 60, STD_COLOR_FONT, STD_COLOR_BG, "Writing chunk %08X", j);
-                    success = selected_flashcart->writeFlash(j, chunk_size, memp+j);
-                    if (!success) {
-                        break;
-                    }
-                    written_chunk++;
-                    DrawStringF(TOP_SCREEN, 10, 70, STD_COLOR_FONT, STD_COLOR_BG, "Chunks written %d (%08X)", written_chunk, written_chunk);
-                }
-            }
-
-            if (success) {
-                DrawString(TOP_SCREEN, 10, 90, COLOR_GREEN, STD_COLOR_BG, "Restoring Complete!");
-            } else {
-                DrawString(TOP_SCREEN, 10, 90, COLOR_GREEN, STD_COLOR_BG, "Restoring failed.");
-            }
-        } else {
+        mem = static_cast<uint8_t *>(memalign(4, length));
+        flash_mem = static_cast<uint8_t *>(memalign(4, flash_length));
+        if (!mem || !flash_mem) {
             ShowPrompt(BOTTOM_SCREEN, false, "Failed to allocate memory");
+            goto fail;
         }
 
-        if (flash_mem) {
-            free(flash_mem);
-        }
-        if (mem) {
-            free(mem);
+        fseek(f, 0, SEEK_SET);
+        fread(mem, 1, length, f);
+
+        DrawString(TOP_SCREEN, 10, 40, STD_COLOR_FONT, STD_COLOR_BG, "Reading...");
+        selected_flashcart->readFlash(0, length, flash_mem);
+
+        bool success = false;
+        int written_chunk = 0;
+        const int chunk_size = 64*1024;
+        for (uint32_t j = 0; j < length; j += chunk_size) {
+            DrawStringF(TOP_SCREEN, 10, 50, STD_COLOR_FONT, STD_COLOR_BG, "Checking %08X", j);
+            if(memcmp(flash_mem + j, mem + j, chunk_size) == 0) {
+                continue;
+            }
+
+            DrawStringF(TOP_SCREEN, 10, 60, STD_COLOR_FONT, STD_COLOR_BG, "Writing chunk %08X", j);
+            success = selected_flashcart->writeFlash(j, chunk_size, mem + j);
+            if (!success) {
+                break;
+            }
+            written_chunk++;
+            DrawStringF(TOP_SCREEN, 10, 70, STD_COLOR_FONT, STD_COLOR_BG, "Chunks written %d (%08X)", written_chunk, written_chunk);
         }
 
+        DrawString(TOP_SCREEN, 10, 90, success ? COLOR_GREEN : COLOR_RED, STD_COLOR_BG,
+            success ? "Restoring Complete!" : "Restoring failed.");
+    }
+
+fail:
+    if (flash_mem) {
+        free(flash_mem);
+    }
+
+    if (mem) {
+        free(mem);
+    }
+
+    if (f) {
         fclose(f);
     }
-    else
-        DrawString(TOP_SCREEN, 10, 40, COLOR_RED, STD_COLOR_BG, "Restore file was not found.");
 
     DrawString(TOP_SCREEN, 10, 160, STD_COLOR_FONT, STD_COLOR_BG, "Press <A> to return to the main menu.");
     WaitButton(BUTTON_A);
@@ -239,71 +242,78 @@ void ntrboot_inject() {
         "Press <Y> for developer unit ntrboot\n"
         "Press <B> to return to the main menu.");
 
-    FILE *f = NULL;
-    FILE *fhash = NULL;
-    uint8_t *blowfish_key = NULL;
+    FILE *f = NULL, *fhash = NULL;
+    const char *fpath, *fhashpath;
+    uint8_t *firm = NULL, *blowfish_key = NULL;
 
     uint32_t button = WaitButton(BUTTON_A | BUTTON_B | BUTTON_Y);
-    const char *fpath, *fhashpath;
-    if (button & BUTTON_A)
-    {
+    if (button & BUTTON_A) {
         fpath = "fat1:/ntrboot/boot9strap_ntr.firm";
         fhashpath = "fat1:/ntrboot/boot9strap_ntr.firm.sha";
         blowfish_key = (uint8_t*)blowfish_retail_bin;
-    }
-    else if (button & BUTTON_Y)
-    {
+    } else if (button & BUTTON_Y) {
         fpath = "fat1:/ntrboot/boot9strap_ntr_dev.firm";
         fhashpath = "fat1:/ntrboot/boot9strap_ntr_dev.firm.sha";
         blowfish_key = (uint8_t *)blowfish_dev_bin;
+    } else if (button & BUTTON_B) {
+        return;
+    } else {
+        __builtin_unreachable();
     }
-    else if (button & BUTTON_B) return;
-    else __builtin_unreachable();
 
     f = fopen(fpath, "rb");
-    if (f != NULL)
+    if (!f) {
+        DrawStringF(TOP_SCREEN, 10, 80, COLOR_RED, STD_COLOR_BG, "%s not found", fpath + 5 /* "fat1:" */);
+        goto fail;
+    }
+
+    // This scope is here so the locals declared below are out of scope at
+    // label `fail`.
     {
         fseek(f, 0, SEEK_END);
         size_t firm_size = ftell(f);
-        uint8_t *firm = (uint8_t*)malloc(firm_size);
-
-        if (firm) {
-            fseek(f, 0, SEEK_SET);
-            fread(firm, 1, firm_size, f);
-
-            fhash = fopen(fhashpath, "rb");
-            if (fhash) {
-                uint8_t hash[32];
-                fseek(fhash, 0, SEEK_SET);
-                if (fread(hash, 1, sizeof(hash), fhash) == sizeof(hash)) {
-                    if (crypto::sha256verify(firm, firm_size, hash)) {
-                        DrawString(TOP_SCREEN, 10, 80, COLOR_GREEN, STD_COLOR_BG, "Injecting...");
-
-                        if (selected_flashcart->injectNtrBoot((uint8_t *)blowfish_key, firm, firm_size)) {
-                            DrawString(TOP_SCREEN, 10, 90, COLOR_GREEN, STD_COLOR_BG, "Injection Complete!");
-                        } else {
-                            DrawString(TOP_SCREEN, 10, 90, COLOR_RED, STD_COLOR_BG, "Injection failed.");
-                        }
-                    } else {
-                        DrawString(TOP_SCREEN, 10, 80, COLOR_RED, STD_COLOR_BG, "Failed to verify FIRM integrity");
-                    }
-                } else {
-                    DrawStringF(TOP_SCREEN, 10, 80, COLOR_RED, STD_COLOR_BG, "%s is corrupt", fhashpath + 5 /* "fat1:" */);
-                }
-
-                fclose(fhash);
-            } else {
-                DrawString(TOP_SCREEN, 10, 80, COLOR_RED, STD_COLOR_BG, "%s not found", fhashpath + 5 /* "fat1:" */);
-            }
-
-            free(firm);
-        } else {
+        firm = static_cast<uint8_t*>(malloc(firm_size));
+        if (!firm) {
             DrawStringF(TOP_SCREEN, 10, 80, COLOR_RED, STD_COLOR_BG, "Failed to allocate memory");
+            goto fail;
         }
 
+        fseek(f, 0, SEEK_SET);
+        fread(firm, 1, firm_size, f);
+
+        fhash = fopen(fhashpath, "rb");
+        if (!fhash) {
+            DrawStringF(TOP_SCREEN, 10, 80, COLOR_RED, STD_COLOR_BG, "%s not found", fhashpath + 5 /* "fat1:" */);
+            goto fail;
+        }
+
+        uint8_t hash[32];
+        if (fread(hash, 1, sizeof(hash), fhash) != sizeof(hash)) {
+            DrawStringF(TOP_SCREEN, 10, 80, COLOR_RED, STD_COLOR_BG, "%s is corrupt", fhashpath + 5 /* "fat1:" */);
+            goto fail;
+        }
+
+        if (!crypto::sha256verify(firm, firm_size, hash)) {
+            DrawString(TOP_SCREEN, 10, 80, COLOR_RED, STD_COLOR_BG, "Failed to verify FIRM integrity");
+            goto fail;
+        }
+
+        DrawString(TOP_SCREEN, 10, 80, COLOR_GREEN, STD_COLOR_BG, "Injecting...");
+        const bool success = selected_flashcart->injectNtrBoot(blowfish_key, firm, firm_size);
+        DrawString(TOP_SCREEN, 10, 90, success ? COLOR_GREEN : COLOR_RED, STD_COLOR_BG,
+            success ? "Injection Complete!" : "Injection failed.");
+    }
+
+fail:
+    if (firm) {
+        free(firm);
+    }
+    if (fhash) {
+        fclose(fhash);
+    }
+    if (f) {
         fclose(f);
-    } else
-        DrawStringF(TOP_SCREEN, 10, 80, COLOR_RED, STD_COLOR_BG, "%s not found", fpath + 5 /* "fat1:" */);
+    }
 
     DrawString(TOP_SCREEN, 10, 100, STD_COLOR_FONT, STD_COLOR_BG, "Press <A> to return to the main menu.");
     WaitButton(BUTTON_A);
