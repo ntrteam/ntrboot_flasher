@@ -5,6 +5,9 @@
 #include "platform.h"
 #include "ui.h"
 
+#include "blowfish_dev_bin.h"
+#include "blowfish_retail_bin.h"
+
 #include <cstdarg>
 
 namespace {
@@ -23,8 +26,6 @@ char const *const priority_strings[] = {
 char const * prioritytostr(log_priority priority) {
     return (priority >= LOG_PRIORITY_MAX) ? "?!#$" : priority_strings[priority];
 }
-
-
 }
 
 char const * loglevel_str() {
@@ -39,9 +40,7 @@ void toggleLoglevel(void) {
 }
 
 namespace flashcart_core {
-    namespace platform {
-
-
+namespace platform {
 void showProgress(uint32_t current, uint32_t total, const char* status_string) {
     ShowProgress(BOTTOM_SCREEN, current, total, status_string);
 }
@@ -73,6 +72,16 @@ int logMessage(log_priority priority, const char *fmt, ...) {
     return result;
 }
 
-
+auto getBlowfishKey(BlowfishKey key) -> const std::uint8_t(&)[0x1048] {
+    switch (key) {
+        default:
+        case BlowfishKey::NTR:
+            return *reinterpret_cast<const std::uint8_t(*)[0x1048]>(0x01FFE428);
+        case BlowfishKey::B9Retail:
+            return *static_cast<const std::uint8_t(*)[0x1048]>(static_cast<const void *>(blowfish_retail_bin));
+        case BlowfishKey::B9Dev:
+            return *static_cast<const std::uint8_t(*)[0x1048]>(static_cast<const void *>(blowfish_dev_bin));
     }
+}
+}
 }

@@ -6,12 +6,12 @@
 #include <malloc.h>
 
 #include <elm.h>
+#include <ncgcpp/ntrcard.h>
 
 #include "menu.h"
 #include "ui.h"
 
 #include "device.h"
-#include "ntrcard.h"
 
 #include "i2c.h"
 #include "hid.h"
@@ -22,7 +22,6 @@
 
 using flashcart_core::Flashcart;
 using flashcart_core::flashcart_list;
-namespace ntrcard = flashcart_core::ntrcard;
 
 void ntrboot_flasher();
 
@@ -31,6 +30,7 @@ void ntrboot_restore_flash();
 void ntrboot_inject();
 
 Flashcart* selected_flashcart;
+ncgc::NTRCard card;
 uint8_t *top_screen, *bottom_screen;
 
 int file_exist (const char *filename)
@@ -78,8 +78,8 @@ void ntrboot_flasher()
         }
         selected_flashcart = flashcart_list->at(flashcart_index);
 
-        ntrcard::init();
-        if (selected_flashcart->initialize())
+        card.init();
+        if (selected_flashcart->initialize(&card))
             break;
         selected_flashcart->shutdown();
         selected_flashcart = 0;

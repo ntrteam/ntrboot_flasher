@@ -26,13 +26,15 @@ INCLUDES	:=	source source/common flashcart_core
 # Setup some defines
 #---------------------------------------------------------------------------------
 LIBELM := $(CURDIR)/libelm3ds
+LIBNCGC := $(CURDIR)/libncgc
 
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------
 ARCH	:=	-marm
 
-CFLAGS	:=	-g -O2 -Wall -Wextra -Wpedantic -Wno-unused-variable -Wno-unused-parameter\
+CFLAGS	:=	-g -O2 -Wall -Wextra -Wpedantic\
+            -Wno-unused-variable -Wno-unused-parameter -Wno-unused-result\
 			-march=armv5te -mtune=arm946e-s -fomit-frame-pointer\
 			-ffunction-sections -fdata-sections\
 			-ffast-math -fdiagnostics-color=always\
@@ -40,7 +42,8 @@ CFLAGS	:=	-g -O2 -Wall -Wextra -Wpedantic -Wno-unused-variable -Wno-unused-param
 
 CFLAGS	+=	$(INCLUDE) -DARM9 -D_GNU_SOURCE\
 			-DNTRBOOT_FLASHER_VERSION=\"$(NTRBOOT_FLASHER_VERSION)\"\
-			-DFLASHCART_CORE_VERSION=\"$(FLASHCART_CORE_VERSION)\"
+			-DFLASHCART_CORE_VERSION=\"$(FLASHCART_CORE_VERSION)\"\
+			-DNCGC_PLATFORM_CTR
 
 CXXFLAGS	:= $(CFLAGS) -std=c++14 -fno-rtti -fno-exceptions -fno-use-cxa-atexit
 
@@ -49,13 +52,13 @@ CFLAGS	+=	-std=c11
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-g --specs=../stub.specs $(ARCH) -Wl,-Map,$(TARGET).map,--gc-sections
 
-LIBS	:= -lelm3ds
+LIBS	:= -lelm3ds -lncgc
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
 # include and lib
 #---------------------------------------------------------------------------------
-LIBDIRS	:= $(LIBELM) $(PORTLIBS)
+LIBDIRS	:= $(LIBELM) $(LIBNCGC) $(PORTLIBS)
 
 #---------------------------------------------------------------------------------
 # no real need to edit anything past this point unless you need to add additional
@@ -112,7 +115,10 @@ all: $(BUILD) firm
 $(LIBELM)/lib/libelm3ds.a: $(LIBELM)
 	@$(MAKE) -C $<
 
-$(BUILD): $(LIBELM)/lib/libelm3ds.a
+$(LIBNCGC)/lib/libncgc.a: $(LIBNCGC)
+	@$(MAKE) PLATFORM=ctr -C $< fordka
+
+$(BUILD): $(LIBELM)/lib/libelm3ds.a $(LIBNCGC)/lib/libncgc.a
 	@[ -d $@ ] || mkdir -p $@
 	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
 

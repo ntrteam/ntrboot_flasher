@@ -1,21 +1,22 @@
 #include "menu.h"
 
+#include <ncgcpp/ntrcard.h>
+
 #include "device.h"
 
 #include "hid.h"
 #include "ui.h"
 #include "i2c.h"
 #include "elm.h"
-#include "platform_ntrcard.h"
 
 using flashcart_core::Flashcart;
 using flashcart_core::flashcart_list;
 
 void menu_wait_cart_insert()
 {
-    if (!isCardPresent())
+    if (!ncgc::NTRCard::cardInserted())
         ShowString(TOP_SCREEN, "No cartridge inserted\n(insert a cartridge to continue)");
-    waitForCard();
+    ncgc::NTRCard::waitForCard();
 }
 
 bool menu_show_intro_warning()
