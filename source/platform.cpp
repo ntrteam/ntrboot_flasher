@@ -66,6 +66,14 @@ int logMessage(log_priority priority, const char *fmt, ...) {
 
     int result = vfprintf(logfile, log_fmt, args);
     fclose(logfile);
+    if(priority == LOG_NOTICE)
+    {
+        char *tmp_str;
+        vasprintf(&tmp_str, log_fmt, args);
+        ShowString(BOTTOM_SCREEN, tmp_str);
+        free(tmp_str);
+    }
+
     va_end(args);
 
     free(log_fmt);
