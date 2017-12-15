@@ -49,6 +49,11 @@ CXXFLAGS	:= $(CFLAGS) -std=c++14 -fno-rtti -fno-exceptions -fno-use-cxa-atexit
 
 CFLAGS	+=	-std=c11
 
+ifneq ($(strip $(testing)),)
+	CFLAGS += -DTESTING=1
+	CXXFLAGS += -DTESTING=1
+endif
+
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-g --specs=../stub.specs $(ARCH) -Wl,-Map,$(TARGET).map,--gc-sections
 
