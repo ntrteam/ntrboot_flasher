@@ -39,6 +39,14 @@ int file_exist (const char *filename)
     return (stat (filename, &buffer) == 0);
 }
 
+// This allocates memory that the user must free!
+char *backup_path(const char *cart_name) {
+    int path_len = snprintf(NULL, 0, "fat1:/ntrboot/%s-backup.bin", cart_name) + 1;
+    char *path = (char *)malloc(path_len);
+    snprintf(path, path_len, "fat1:/ntrboot/%s-backup.bin", cart_name);
+    return path;
+}
+
 /*-----------------------------------------------------------------
 main
 This is the main for the code running on arm9
@@ -135,10 +143,11 @@ void ntrboot_dump_flash() {
         mkdir("fat1:/ntrboot", 0700);
     }
 
-    FILE *f = fopen("fat1:/ntrboot/backup.bin","wb");
+    char *backuppath = backup_path(selected_flashcart->getShortName());
+    FILE *f = fopen(backuppath,"wb");
     if (f) {
         if (selected_flashcart->readFlash(0, length, mem)) {
-            FILE *f = fopen("fat1:/ntrboot/backup.bin","wb");
+            // FILE *f = fopen(backuppath,"wb"); // This seems redundant
             fwrite (mem, 1, length, f);
             fclose(f);
 
@@ -148,10 +157,11 @@ void ntrboot_dump_flash() {
         }
     } else {
         DrawStringF(TOP_SCREEN, 10, 30, COLOR_RED, STD_COLOR_BG,
-            "Failed to open /ntrboot/backup.bin for writing\n"
-            "(%d %s)", errno, strerror(errno));
+            "Failed to open %s for writing\n"
+            "(%d %s)", backuppath + 5 /* "fat1:" */, errno, strerror(errno));
     }
 
+    free(backuppath);
     free(mem);
 
     DrawString(TOP_SCREEN, 10, 160, STD_COLOR_FONT, STD_COLOR_BG, "Press <A> to return to the main menu.");
@@ -234,31 +244,42 @@ fail:
 }
 
 void ntrboot_inject() {
+    uint8_t *firm = NULL, *blowfish_key = NULL;
+    FILE *f = NULL, *fhash = NULL;
+    const char *fpath = NULL, *fhashpath = NULL;
+
     ClearScreen(TOP_SCREEN, STD_COLOR_BG);
-    DrawString(TOP_SCREEN, 10, 20, STD_COLOR_FONT, STD_COLOR_BG,
-        "Injecting Ntrboot\n"
-        "\n"
+    DrawString(TOP_SCREEN, 10, 20, STD_COLOR_FONT, STD_COLOR_BG, "Injecting Ntrboot");
+
+    char *backuppath = backup_path(selected_flashcart->getShortName());
+    bool backup_exist = file_exist(backuppath);
+    free(backuppath);
+
+    if (!backup_exist) {
+        DrawString(TOP_SCREEN, 10, 80, COLOR_RED, STD_COLOR_BG, "Backup not found! Go take a backup!");
+        goto fail;
+    }
+
+    DrawString(TOP_SCREEN, 10, 40, STD_COLOR_FONT, STD_COLOR_BG,
         "Press <A> for retail unit ntrboot\n"
         "Press <Y> for developer unit ntrboot\n"
         "Press <B> to return to the main menu.");
 
-    FILE *f = NULL, *fhash = NULL;
-    const char *fpath, *fhashpath;
-    uint8_t *firm = NULL, *blowfish_key = NULL;
-
-    uint32_t button = WaitButton(BUTTON_A | BUTTON_B | BUTTON_Y);
-    if (button & BUTTON_A) {
-        fpath = "fat1:/ntrboot/boot9strap_ntr.firm";
-        fhashpath = "fat1:/ntrboot/boot9strap_ntr.firm.sha";
-        blowfish_key = (uint8_t*)blowfish_retail_bin;
-    } else if (button & BUTTON_Y) {
-        fpath = "fat1:/ntrboot/boot9strap_ntr_dev.firm";
-        fhashpath = "fat1:/ntrboot/boot9strap_ntr_dev.firm.sha";
-        blowfish_key = (uint8_t *)blowfish_dev_bin;
-    } else if (button & BUTTON_B) {
-        return;
-    } else {
-        __builtin_unreachable();
+    {
+        uint32_t button = WaitButton(BUTTON_A | BUTTON_B | BUTTON_Y);
+        if (button & BUTTON_A) {
+            fpath = "fat1:/ntrboot/boot9strap_ntr.firm";
+            fhashpath = "fat1:/ntrboot/boot9strap_ntr.firm.sha";
+            blowfish_key = (uint8_t*)blowfish_retail_bin;
+        } else if (button & BUTTON_Y) {
+            fpath = "fat1:/ntrboot/boot9strap_ntr_dev.firm";
+            fhashpath = "fat1:/ntrboot/boot9strap_ntr_dev.firm.sha";
+            blowfish_key = (uint8_t *)blowfish_dev_bin;
+        } else if (button & BUTTON_B) {
+            return;
+        } else {
+            __builtin_unreachable();
+        }
     }
 
     f = fopen(fpath, "rb");
