@@ -4,7 +4,8 @@ _A tool to flash that bootrom-hax goodness to your flashcart._
 For details on how ntrboot works, see the last few pages of [33.5c3](https://sciresm.github.io/33-and-a-half-c3/).
 
 ## Supported Carts
-![From Left to Right: Acekard 2i HW81, Acekard 2i HW44, R4i Gold 3DS RTS, R4i Gold 3DS, R4i Ultra, R4 3D Revolution, DSTT, R4i-SDHC RTS Lite, R4i-SDHC Dual-Core, R4-SDHC Gold Pro, R4i 3DS RTS, Infinity 3 R4i, R4i Gold 3DS Deluxe Edition, R4i-B9S](https://i.hentai.design/uploads/big/7f6f676a2df3574c30ebc65b61c130df.png)
+![From Left to Right: Acekard 2i HW81, Acekard 2i HW44, R4i Gold 3DS RTS, R4i Gold 3DS, R4i Ultra, R4 3D Revolution, DSTT, R4i-SDHC RTS Lite, R4i-SDHC Dual-Core, R4-SDHC Gold Pro, R4i 3DS RTS, Infinity 3 R4i, R4i Gold 3DS Deluxe Edition, R4i-B9S](https://i.lolis.stream/uploads/big/6c535398c6a74d580ffc9092c32d7687.png)
+
 - Acekard 2i HW-44
 - Acekard 2i HW-81
 - DSTT (**some flash chips only!**)
