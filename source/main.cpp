@@ -174,7 +174,7 @@ void ntrboot_restore_flash() {
     DrawString(TOP_SCREEN, 10, 20, STD_COLOR_FONT, STD_COLOR_BG, "Restoring flash");
 
     uint8_t *flash_mem = NULL, *mem = NULL;
-    const char *const backuppath = backup_path(selected_flashcart->getShortName());
+    char *const backuppath = backup_path(selected_flashcart->getShortName());
     FILE *const f = fopen(backuppath, "rb");
 
     if (!f) {
