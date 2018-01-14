@@ -54,9 +54,6 @@ int logMessage(log_priority priority, const char *fmt, ...) {
     if (!logfile) return -1;
     first_open = false;
 
-    va_list args;
-    va_start(args, fmt);
-
     const char *priority_str = prioritytostr(priority);
 
     char *log_fmt;
@@ -64,17 +61,20 @@ int logMessage(log_priority priority, const char *fmt, ...) {
         return -1; // would pass the actual return value back, but I don't think we care.
     }
 
+    va_list args;
+    va_start(args, fmt);
     int result = vfprintf(logfile, log_fmt, args);
+    va_end(args);
+
     fclose(logfile);
-    if(priority == LOG_NOTICE)
-    {
+    if (priority == LOG_NOTICE) {
         char *tmp_str;
-        vasprintf(&tmp_str, log_fmt, args);
+        va_start(args, fmt);
+        vasprintf(&tmp_str, fmt, args);
+        va_end(args);
         ShowString(BOTTOM_SCREEN, tmp_str);
         free(tmp_str);
     }
-
-    va_end(args);
 
     free(log_fmt);
     return result;
