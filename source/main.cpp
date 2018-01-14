@@ -174,7 +174,8 @@ void ntrboot_restore_flash() {
     DrawString(TOP_SCREEN, 10, 20, STD_COLOR_FONT, STD_COLOR_BG, "Restoring flash");
 
     uint8_t *flash_mem = NULL, *mem = NULL;
-    FILE *const f = fopen("fat1:/ntrboot/backup.bin","rb");
+    const char *const backuppath = backup_path(selected_flashcart->getShortName());
+    FILE *const f = fopen(backuppath, "rb");
 
     if (!f) {
         DrawString(TOP_SCREEN, 10, 40, COLOR_RED, STD_COLOR_BG, "Restore file was not found.");
@@ -239,6 +240,7 @@ fail:
         fclose(f);
     }
 
+    free(backuppath);
     DrawString(TOP_SCREEN, 10, 160, STD_COLOR_FONT, STD_COLOR_BG, "Press <A> to return to the main menu.");
     WaitButton(BUTTON_A);
 }
