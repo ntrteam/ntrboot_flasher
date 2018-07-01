@@ -16,11 +16,11 @@ using namespace flashcart_core;
 int loglevel = LOG_INFO;
 
 char const *const priority_strings[] = {
-    [LOG_DEBUG] = "DEBUG",
-    [LOG_INFO] = "INFO",
-    [LOG_NOTICE] = "NOTICE",
-    [LOG_WARN] = "WARN",
-    [LOG_ERR] = "ERROR"
+    "DEBUG",
+    "INFO",
+    "NOTICE",
+    "WARN",
+    "ERROR"
 };
 
 char const * prioritytostr(log_priority priority) {
