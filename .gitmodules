@@ -1,6 +1,6 @@
 [submodule "libelm3ds"]
 	path = libelm3ds
-	url = https://github.com/Normmatt/libelm3ds.git
+	url = https://github.com/ntrteam/libelm3ds.git
 [submodule "flashcart_core"]
 	path = flashcart_core
 	url = https://github.com/ntrteam/flashcart_core.git
