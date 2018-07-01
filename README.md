@@ -9,7 +9,7 @@ ntrboot_flasher is no longer in active development. We consider it mostly comple
 
 [v0.4.0](https://github.com/ntrteam/ntrboot_flasher/releases/tag/v0.4.0) is the most up-to-date release. Although there are newer commits, they do not affect functionality (they fix build issues with newer devkitARM releases).
 
-There are no known serious issues. If there are any new issues discovered, we may fix them.
+There are no known serious issues. If there are any new issues discovered, we may fix them and issue (a) new release(s).
 
 ## Supported Carts
 ![From Left to Right: Acekard 2i HW81, Acekard 2i HW44, R4i Gold 3DS RTS, R4i Gold 3DS, R4i Ultra, R4 3D Revolution, DSTT, R4i-SDHC RTS Lite, R4i-SDHC Dual-Core, R4-SDHC Gold Pro, R4i 3DS RTS, Infinity 3 R4i, R4i Gold 3DS Deluxe Edition, R4i-B9S](https://i.lolis.stream/uploads/big/6c535398c6a74d580ffc9092c32d7687.png)
