@@ -7,6 +7,8 @@ For details on how ntrboot works, see the last few pages of [33.5c3](https://sci
 
 ntrboot_flasher is no longer in active development. We consider it mostly complete. Support for flashcarts that are not already supported is extremely unlikely.
 
+[v0.4.0](https://github.com/ntrteam/ntrboot_flasher/releases/tag/v0.4.0) is the most up-to-date release. Although there are newer commits, they do not affect functionality (they fix build issues with newer devkitARM releases).
+
 There are no known serious issues. If there are any new issues discovered, we may fix them.
 
 ## Supported Carts
