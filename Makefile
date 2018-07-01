@@ -31,11 +31,11 @@ LIBNCGC := $(CURDIR)/libncgc
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------
-ARCH	:=	-marm
+ARCH	:=	-marm -march=armv5te -mtune=arm946e-s
 
 CFLAGS	:=	-g -O2 -Wall -Wextra -Wpedantic\
             -Wno-unused-variable -Wno-unused-parameter -Wno-unused-result\
-			-march=armv5te -mtune=arm946e-s -fomit-frame-pointer\
+			-fomit-frame-pointer\
 			-ffunction-sections -fdata-sections\
 			-ffast-math -fdiagnostics-color=always\
 			$(ARCH)
