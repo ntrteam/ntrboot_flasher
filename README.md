@@ -50,11 +50,12 @@ This software is licensed under the terms of the GPLv3.
 You can find a copy of the license in the LICENSE file.
 
 ## Credits
-[@Normmatt](https://github.com/Normmatt) for initial implementation, bug squashing, expertise... etc.
-[@SciresM](https://twitter.com/SciresM) for sighax/boot9strap and flashcart RE.
-[@hedgeberg](https://twitter.com/hedgeberg) for testing and flashcart RE.
-[@stuckpixel](https://twitter.com/pixel_stuck) for testing.
-[@Myria](https://twitter.com/Myriachan) for testing.
-[@Hikari](https://twitter.com/yuukishiroko) for testing.
+- [@Normmatt](https://github.com/Normmatt) for initial implementation, bug squashing, expertise... etc.
+- [@SciresM](https://twitter.com/SciresM) for sighax/boot9strap and flashcart RE.
+- [@hedgeberg](https://twitter.com/hedgeberg) for testing and flashcart RE.
+- [@handsomematt](https://github.com/handsomematt) for UI, testing and flashcart RE.
+- [@stuckpixel](https://twitter.com/pixel_stuck) for testing.
+- [@Myria](https://twitter.com/Myriachan) for testing.
+- [@Hikari](https://twitter.com/yuukishiroko) for testing.
 
 Huge props to [@d3m3vilurr](https://twitter.com/d3m3vilurr) for figuring this out independently!
