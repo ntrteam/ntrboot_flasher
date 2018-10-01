@@ -164,9 +164,9 @@ void ntrboot_dump_flash() {
     free(backuppath);
     free(mem);
 
-    DrawString(TOP_SCREEN, 10, 160, STD_COLOR_FONT, STD_COLOR_BG, "Press <A> to return to the main menu.");
+    DrawString(TOP_SCREEN, 10, 160, STD_COLOR_FONT, STD_COLOR_BG, "Press <B> to return to the main menu.");
 
-    WaitButton(BUTTON_A);
+    WaitButton(BUTTON_B);
 }
 
 void ntrboot_restore_flash() {
@@ -241,8 +241,8 @@ fail:
     }
 
     free(backuppath);
-    DrawString(TOP_SCREEN, 10, 160, STD_COLOR_FONT, STD_COLOR_BG, "Press <A> to return to the main menu.");
-    WaitButton(BUTTON_A);
+    DrawString(TOP_SCREEN, 10, 160, STD_COLOR_FONT, STD_COLOR_BG, "Press <B> to return to the main menu.");
+    WaitButton(BUTTON_B);
 }
 
 void ntrboot_inject() {
@@ -338,6 +338,6 @@ fail:
         fclose(f);
     }
 
-    DrawString(TOP_SCREEN, 10, 100, STD_COLOR_FONT, STD_COLOR_BG, "Press <A> to return to the main menu.");
-    WaitButton(BUTTON_A);
+    DrawString(TOP_SCREEN, 10, 100, STD_COLOR_FONT, STD_COLOR_BG, "Press <B> to return to the main menu.");
+    WaitButton(BUTTON_B);
 }
