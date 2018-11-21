@@ -27,6 +27,7 @@ There are no known serious issues. If there are any new issues discovered, we ma
 - R4i-SDHC Dual-Core (r4isdhc.com)
 - R4i-SDHC Gold Pro (r4isdhc.com)
 - R4i-SDHC RTS Lite (r4isdhc.com)
+- R4 SDHC Dual Core (revisions 5.06/7.00/7.07) (r4isdhc.hk) (**R4iGold.cc may work as well, but have not been tested!**)
 
 **Note:** Flashcarts from r4isdhc.com tend to have yearly re-releases; all versions of these carts (2014-2017) should work but not all have been tested.
 
